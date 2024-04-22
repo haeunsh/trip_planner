@@ -17,7 +17,11 @@ import lombok.NoArgsConstructor;
 public class TripDetail {
 	private int tripDetailNo;
 	private int tripNo;
+	private int innNo;
+	private int placeNo;
 	private String tripDay;
+	private int tripRoute;
 	private int tripCost;
-	private List<TripPlace> selectPlaceList;
+	private String tripTodo;
+	private List<TripPlace> placeList;
 }

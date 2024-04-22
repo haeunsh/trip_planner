@@ -25,7 +25,6 @@ import License from "./page/member/License";
 import BusinessAuth from "./page/member/BusinessAuth";
 import BlogMain from "./page/blog/blogMain";
 import ReservationInn from "./page/INN/ReservationInn";
-import { CreateTrips } from "./page/mypage/CreateTrips";
 import BlogView from "./page/blog/BlogView";
 import InnDetailView from "./page/INN/InnDetailView";
 import Swal from "sweetalert2";
@@ -36,6 +35,8 @@ import TourView from "./page/tour/TourView";
 import MemberMgmt from "./page/admin/MemberMgmt";
 import PromotionMain from "./page/promotion/PromotionMain";
 import TourBook from "./page/tour/TourBook";
+import CreateTrips from "./page/mypage/CreateTrips";
+import { CreateTrips_backup } from "./page/mypage/CreateTrips_backup";
 function App() {
   //스토리지에 저장된 데이터를 꺼내서 객체형식으로 변환
   const navigate = useNavigate();
@@ -144,6 +145,10 @@ function App() {
           <Route
             path="/mypage/myTrips/createTrips"
             element={<CreateTrips isLogin={isLogin} />}
+          />
+          <Route
+            path="/mypage/myTrips/createTrips_backup"
+            element={<CreateTrips_backup isLogin={isLogin} />}
           />
           <Route
             path="/mypage/myTrips/modifyTrips/:tripNo"

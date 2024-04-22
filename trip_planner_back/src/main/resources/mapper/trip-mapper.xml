@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="kr.or.iei.trip.model.dao.TripDao">
+	<insert id="insertTripList">
+		insert into trip_place_tbl values(trip_place_seq.nextval, #{placeName}, #{placeCategory}, #{placeAddress}, #{placePhone}, #{placeLat}, #{placeLng})
+	</insert>
+
+	<!--
 	<insert id="insertTrip">
 		insert into trip_tbl values(trip_seq.nextval, #{memberNo}, #{tripTitle}, #{tripStartDate}, #{tripEndDate})
 		<selectKey resultType="int" keyProperty="tripNo" order="AFTER">
@@ -144,6 +149,7 @@
 	<delete id="deleteTrip">
 		delete from trip_tbl where trip_no=#{tripNo}
 	</delete>
+	 -->
 </mapper>
 
 

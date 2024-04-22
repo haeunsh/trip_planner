@@ -22,6 +22,7 @@ button[disabled]{opacity: 0.2;}
 [class^=btn_].outline.view_more{color: var(--main_04);}
 .btn_text{font-size: 14px; text-decoration: underline; text-underline-offset: 4px; line-height: 28px;}
 .btn_area{display: flex; gap: 8px; margin-top: 40px; justify-content: center;}
+.btn_area.col{flex-direction: column; align-items: center;}
 .btn_area+.btn_area{margin-top: 20px;}
 .btn_area [class^=btn_].lg{margin: 0 2px;}
 .btn_area .btn_text{padding: 4px 12px;}

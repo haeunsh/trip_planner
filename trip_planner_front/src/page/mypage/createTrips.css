@@ -22,7 +22,7 @@
 .createTrips_wrap .trips_wrap .set_day_wrap+.set_day_wrap{margin-top: 40px;}
 .createTrips_wrap .day_title_wrap{display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--line_03);}
 .createTrips_wrap .day_title_wrap .day_title{display: flex; align-items: center; gap: 4px; font-family: pt-b; font-size: 16px; line-height: 24px;}
-.createTrips_wrap .day_title_wrap .day_title>.tripDay{color: var(--gray_05); font-size: 14px;}
+.createTrips_wrap .day_title_wrap .day_title>.tripDate{color: var(--gray_05); font-size: 14px;}
 .createTrips_wrap .day_title_wrap .btn_tripCost{position: relative; display: inline-block; padding-left: 12px; color: var(--main_02); font-size: 14px; line-height: 40px;}
 .createTrips_wrap .day_title_wrap .btn_tripCost::before{content: "+"; display: block; position: absolute; top: 0; bottom: 0; left: 0; width: 12px; font-size: 14px; line-height: 40px; text-align: center;}
 .createTrips_wrap .day_title_wrap .btn_tripCost.on{padding-left: 22px;}
