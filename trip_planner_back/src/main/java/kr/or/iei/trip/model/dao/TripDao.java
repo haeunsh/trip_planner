@@ -1,18 +1,30 @@
 package kr.or.iei.trip.model.dao;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import kr.or.iei.inn.model.dto.Inn;
+import kr.or.iei.trip.model.dto.SearchPlace;
 import kr.or.iei.trip.model.dto.Trip;
 import kr.or.iei.trip.model.dto.TripDetail;
 import kr.or.iei.trip.model.dto.TripPlace;
+import kr.or.iei.util.PageInfo;
 
 @Mapper
 public interface TripDao {
 
 	int insertTripList(TripPlace tp);
+
+	int selectTotalPlaceCount(String keyword);
+
+	ArrayList<TripPlace> selectSearchPlace(SearchPlace searchPlace);
+
+	int selectTotalInnsCount(String keyword);
+
+	ArrayList<Inn> selectSearchInns(SearchPlace searchInns);
 
 //	int insertTrip(Trip trip);
 //

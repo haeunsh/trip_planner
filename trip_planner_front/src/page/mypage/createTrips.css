@@ -74,15 +74,20 @@
 .createTrips_wrap .search_wrap .search_input_wrap .search_input{display: flex; border-bottom: 1px solid #000;}
 .createTrips_wrap .search_wrap .search_input_wrap .search_input>input{flex: 1; border: none;}
 .createTrips_wrap .search_wrap .search_input_wrap .search_input>.btn_search{display: block; width: 40px; height: 40px; background: url(/public/images/icon_search.svg) no-repeat center / 36px;}
-.createTrips_wrap .search_wrap .search_result_wrap{height: 100%; padding: 20px 0 60px;}
+.createTrips_wrap .search_wrap .search_result_wrap{padding: 20px 10px 60px 20px; overflow-y: auto;}
 .createTrips_wrap .search_wrap .search_result_wrap .result_title{font-family: pt-b; font-size: 16px; line-height: 1.5;}
 .createTrips_wrap .search_wrap .search_result_wrap .result_title~.result_title{margin-top: 20px;}
-.createTrips_wrap .search_wrap .search_result_wrap .result_place_area{height: 100%; margin: 8px 0; padding: 0 20px; overflow-y: auto; scroll-behavior: smooth;}
+.createTrips_wrap .search_wrap .search_result_wrap .result_place_area{max-height: 500px; margin: 8px 0; padding-right: 10px; overflow-y: auto; scroll-behavior: smooth;}
 .createTrips_wrap .search_wrap #pagination{display: flex; justify-content: center; align-items: center; gap: 4px; padding: 20px 0;}
 .createTrips_wrap .search_wrap #pagination>a{display: block; width: 30px; font-size: 12px; line-height: 30px; text-align: center;}
 .createTrips_wrap .search_wrap #pagination>a.on{border-radius: 50%; background-color: var(--main_03); font-family: pt-eb; font-size: 13px;}
-.createTrips_wrap .search_wrap .search_result_wrap .result_inns_area{max-height: 500px; margin-top: 8px; overflow-y: auto;}
 .createTrips_wrap .search_wrap>.btn_close{position: absolute; display: block; top: 0; right: 0; width: 30px; height: 30px; background: url(/public/images/icon_close_gray.svg) no-repeat center / contain;}
+
+.createTrips_wrap .pagination{display: flex; gap: 4px; justify-content: center; margin: 12px 0;}
+.createTrips_wrap .pagination>.page_item{display: block; width: 24px; height: 24px; font-size: 14px; line-height: 24px; text-align: center;}
+.createTrips_wrap .pagination>.page_item.active{font-family: pt-b;}
+.createTrips_wrap .pagination>.page_item.prev{background: url(/public/images/icon_arrow_prev_black_40.svg) no-repeat center / contain;}
+.createTrips_wrap .pagination>.page_item.next{background: url(/public/images/icon_arrow_prev_black_40.svg) no-repeat center / contain; transform: rotate(180deg);}
 
 /* 지도 */
 .createTrips_wrap>.map_area .map_route {width: 24px; height: 24px; border-radius: 50%; color: #fff; font-family: pt-b; font-size: 14px; line-height: 24px; text-align: center;}

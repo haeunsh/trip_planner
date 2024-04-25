@@ -17,13 +17,13 @@ const CreateTrips_backup = (props) => {
   const navigate = useNavigate();
   
   const isLogin = props.isLogin;
-  if (!isLogin) {
-    Swal.fire({
-      icon: "warning",
-      text: "로그인 후 이용이 가능합니다.",
-      confirmButtonText: "닫기",
-    }).then(navigate("/"));
-  }
+  // if (!isLogin) {
+  //   Swal.fire({
+  //     icon: "warning",
+  //     text: "로그인 후 이용이 가능합니다.",
+  //     confirmButtonText: "닫기",
+  //   }).then(navigate("/"));
+  // }
 
   const [trip, setTrip] = useState({}); //최종 데이터
   const [tripBtnDisabled, setTripBtnDisabled] = useState(true);

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kr.or.iei.ResponseDTO;
+import kr.or.iei.trip.model.dto.SearchPlace;
 import kr.or.iei.trip.model.dto.Trip;
 import kr.or.iei.trip.model.dto.TripDetail;
 import kr.or.iei.trip.model.dto.TripPlace;
@@ -91,7 +93,30 @@ public class TripController {
 		System.out.println("리스트"+placeList);
 		return null;
 	}
+
+	@Operation(summary = "여행일지 장소 검색", description = "여행일지 장소 검색")
+	@ApiResponses({
+		@ApiResponse(responseCode = "200", description = "message 값 확인"),
+		@ApiResponse(responseCode = "500", description = "서버 에러")
+	})
+	@PostMapping(value="/searchPlace")
+	public ResponseEntity<ResponseDTO> selectSearchPlace(@RequestBody SearchPlace searchPlace){
+		Map placeMap = tripService.selectSearchPlace(searchPlace);
+		ResponseDTO response = new ResponseDTO(200, HttpStatus.OK, "success", placeMap);
+		return new ResponseEntity<ResponseDTO>(response, response.getHttpStatus());
+	}
 	
+	@Operation(summary = "여행일지 숙소 검색", description = "여행일지 숙소 검색")
+	@ApiResponses({
+		@ApiResponse(responseCode = "200", description = "message 값 확인"),
+		@ApiResponse(responseCode = "500", description = "서버 에러")
+	})
+	@PostMapping(value="/searchInns")
+	public ResponseEntity<ResponseDTO> selectSearchInns(@RequestBody SearchPlace searchInns){
+		Map innsMap = tripService.selectSearchInns(searchInns);
+		ResponseDTO response = new ResponseDTO(200, HttpStatus.OK, "success", innsMap);
+		return new ResponseEntity<ResponseDTO>(response, response.getHttpStatus());
+	}
 	
 //	@Operation(summary = "여행 일정 등록", description = "여행 일정 등록")
 //	@ApiResponses({

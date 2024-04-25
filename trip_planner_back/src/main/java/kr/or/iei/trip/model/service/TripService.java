@@ -1,18 +1,24 @@
 package kr.or.iei.trip.model.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import kr.or.iei.inn.model.dto.Inn;
 import kr.or.iei.member.model.dao.MemberDao;
 import kr.or.iei.member.model.dto.Member;
 import kr.or.iei.trip.model.dao.TripDao;
+import kr.or.iei.trip.model.dto.SearchPlace;
 import kr.or.iei.trip.model.dto.Trip;
 import kr.or.iei.trip.model.dto.TripDetail;
 import kr.or.iei.trip.model.dto.TripPlace;
+import kr.or.iei.util.PageInfo;
+import kr.or.iei.util.Pagination;
 
 @Service
 public class TripService {
@@ -20,6 +26,8 @@ public class TripService {
 	private TripDao tripDao;
 	@Autowired
 	private MemberDao memberDao;
+	@Autowired
+	private Pagination pagination;
 	
 	@Transactional
 	public int insertTripList(ArrayList<TripPlace> placeList) {
@@ -28,6 +36,41 @@ public class TripService {
 			result += tripDao.insertTripList(tp);
 		}
 		return result;
+	}
+
+	public Map selectSearchPlace(SearchPlace searchPlace) {
+		String keyword = searchPlace.getKeyword();
+		int reqPage = searchPlace.getReqPage();
+		int numPerPage = 10;
+		int pageNaviSize = 5;
+		int totalCount = tripDao.selectTotalPlaceCount(keyword);
+		PageInfo pi = pagination.getPageInfo(reqPage, numPerPage, pageNaviSize, totalCount);
+		searchPlace.setStart(pi.getStart());
+		searchPlace.setEnd(pi.getEnd());
+		ArrayList<TripPlace> placeList = tripDao.selectSearchPlace(searchPlace);
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		map.put("placeList", placeList);
+		map.put("pi", pi);
+//		System.out.println(map);
+		return map;
+	}
+
+	public Map selectSearchInns(SearchPlace searchInns) {
+		String keyword = searchInns.getKeyword();
+		int reqPage = searchInns.getReqPage();
+		int numPerPage = 10;
+		int pageNaviSize = 5;
+		int totalCount = tripDao.selectTotalInnsCount(keyword);
+		System.out.println(totalCount);
+		PageInfo pi = pagination.getPageInfo(reqPage, numPerPage, pageNaviSize, totalCount);
+		searchInns.setStart(pi.getStart());
+		searchInns.setEnd(pi.getEnd());
+		ArrayList<Inn> innList = tripDao.selectSearchInns(searchInns);
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		map.put("innList", innList);
+		map.put("pi", pi);
+		System.out.println(map);
+		return map;
 	}
 
 //	@Transactional

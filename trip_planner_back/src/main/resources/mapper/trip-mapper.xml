@@ -5,6 +5,22 @@
 		insert into trip_place_tbl values(trip_place_seq.nextval, #{placeName}, #{placeCategory}, #{placeAddress}, #{placePhone}, #{placeLat}, #{placeLng})
 	</insert>
 
+	<select id="selectTotalPlaceCount" resultType="int">
+		select count(*) from (select row_number() over(partition by place_name order by place_name desc) rn from trip_place_tbl where place_name||place_address like '%'||#{keyword}||'%')
+	</select>
+	
+	<select id="selectSearchPlace" resultType="tripPlace">
+		select * from (select rownum rnum, tp.* from (select place_no, place_name, place_category, place_address, place_phone, place_lat, place_lng, row_number() over(partition by place_name order by place_name desc) rn from trip_place_tbl where place_name||place_address like '%'||#{keyword}||'%')tp where rn=1) where rnum between #{start} and #{end}
+	</select>
+	
+	<select id="selectTotalInnsCount" resultType="int">
+		select count(*) from (select (select partner_name from partner_tbl where partner_no=inn.partner_no) partner_name, inn_addr from inn_tbl inn) where partner_name||inn_addr like '%'||#{keyword}||'%'
+	</select>
+	
+	<select id="selectSearchInns">
+		select * from (select rownum rnum, i.* from (select case when inn_type = 1 then '호텔' when inn_type = 2 then '리조트' when inn_type = 3 then '펜션' when inn_type = 4 then '게스트하우스' end inn_type_str, (select partner_name from partner_tbl where partner_no=inn.partner_no) partner_name, (select partner_tel from partner_tbl where partner_no=inn.partner_no) partner_phone, inn_addr from inn_tbl inn order by partner_name)i where partner_name||inn_addr like '%'||#{keyword}||'%') where rnum between #{start} and #{end}
+	</select>
+
 	<!--
 	<insert id="insertTrip">
 		insert into trip_tbl values(trip_seq.nextval, #{memberNo}, #{tripTitle}, #{tripStartDate}, #{tripEndDate})
