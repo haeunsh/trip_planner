@@ -3,7 +3,7 @@
 .createTrips_wrap>.map_area{flex-grow: 1;}
 .createTrips_wrap>.left_area{position: relative; display: flex;}
 .createTrips_wrap .trips_wrap{position: relative; display: flex; flex-direction: column; width: 377px; padding: 30px 0 105px; border-right: 1px solid var(--line_03); background-color: #fff;}
-.createTrips_wrap .search_wrap{position: absolute; left: 377px; top: 0; bottom: 0; display: flex; flex-direction: column; width: 377px; padding: 30px 0; border-right: 1px solid var(--line_03); background-color: #fff; z-index: 100;}
+.createTrips_wrap .search_wrap{position: absolute; left: 377px; top: 0; bottom: 0; display: flex; flex-direction: column; width: 377px; padding: 30px 0 22px; border-right: 1px solid var(--line_03); background-color: #fff; z-index: 100;}
 
 .createTrips_wrap .trips_wrap>.trips_input_wrap{padding: 0 20px;}
 .createTrips_wrap .trips_wrap>.trips_input_wrap>.set_date_wrap{margin-top: 24px;}
@@ -19,6 +19,9 @@
 .createTrips_wrap .css-1laqsz7-MuiInputAdornment-root{margin-left: 0;}
 
 .createTrips_wrap .trips_wrap>.trips_plan_wrap{margin-top: 20px; padding: 20px 20px 40px; overflow-y: auto;}
+.createTrips_wrap .trips_wrap>.trips_plan_wrap::-webkit-scrollbar{width: 8px;}
+.createTrips_wrap .trips_wrap>.trips_plan_wrap::-webkit-scrollbar-thumb{background-color: #D6D6D6; border-radius: 8px;}
+.createTrips_wrap .trips_wrap>.trips_plan_wrap::-webkit-scrollbar-track{background-color: #f2f2f2; border-radius: 8px;}
 .createTrips_wrap .trips_wrap .set_day_wrap+.set_day_wrap{margin-top: 40px;}
 .createTrips_wrap .day_title_wrap{display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--line_03);}
 .createTrips_wrap .day_title_wrap .day_title{display: flex; align-items: center; gap: 4px; font-family: pt-b; font-size: 16px; line-height: 24px;}
@@ -28,7 +31,7 @@
 .createTrips_wrap .day_title_wrap .btn_tripCost.on{padding-left: 22px;}
 .createTrips_wrap .day_title_wrap .btn_tripCost.on::before{content: ""; width: 22px; background: url(/public/images/icon_tripCost.svg) no-repeat center left / contain;} 
 
-.createTrips_wrap .place_list{position: relative; display: flex; flex-direction: column; gap: 12px;}
+.createTrips_wrap .place_list{display: flex; flex-direction: column; gap: 12px;}
 .createTrips_wrap .day_items_wrap{position: relative;}
 .createTrips_wrap .day_items_wrap::before{content: ''; display: block; position: absolute; width: 2px; top: 0; bottom: 0; left: 13px; background-color: rgba(233,81,28,0.2);}
 .createTrips_wrap .set_day_wrap:nth-of-type(1n) .day_items_wrap::before{background-color: rgba(253, 81, 137, 0.2);}
@@ -74,16 +77,23 @@
 .createTrips_wrap .search_wrap .search_input_wrap .search_input{display: flex; border-bottom: 1px solid #000;}
 .createTrips_wrap .search_wrap .search_input_wrap .search_input>input{flex: 1; border: none;}
 .createTrips_wrap .search_wrap .search_input_wrap .search_input>.btn_search{display: block; width: 40px; height: 40px; background: url(/public/images/icon_search.svg) no-repeat center / 36px;}
-.createTrips_wrap .search_wrap .search_result_wrap{padding: 20px 10px 60px 20px; overflow-y: auto;}
-.createTrips_wrap .search_wrap .search_result_wrap .result_title{font-family: pt-b; font-size: 16px; line-height: 1.5;}
-.createTrips_wrap .search_wrap .search_result_wrap .result_title~.result_title{margin-top: 20px;}
-.createTrips_wrap .search_wrap .search_result_wrap .result_place_area{max-height: 500px; margin: 8px 0; padding-right: 10px; overflow-y: auto; scroll-behavior: smooth;}
+.createTrips_wrap .search_wrap .search_result_wrap{position:relative; margin: 20px 0 0 10px; overflow-y: auto; scroll-behavior: smooth;}
+.createTrips_wrap .search_wrap .search_result_wrap::-webkit-scrollbar{width: 8px;}
+.createTrips_wrap .search_wrap .search_result_wrap::-webkit-scrollbar-thumb{background-color: #D6D6D6; border-radius: 8px;}
+.createTrips_wrap .search_wrap .search_result_wrap::-webkit-scrollbar-track{background-color: #f2f2f2; border-radius: 8px;}
+.createTrips_wrap .search_wrap .search_result_wrap .result_title{position: sticky; top: 0; z-index: 1; padding: 8px 10px; background-color: #fff; font-family: pt-b; font-size: 16px; line-height: 1.5;}
+/* .createTrips_wrap .search_wrap .search_result_wrap .result_title~.result_title{margin-top: 12px;} */
+/* .createTrips_wrap .search_wrap .search_result_wrap .result_place_area{max-height: 500px; margin: 8px 0; padding-right: 10px; overflow-y: auto; scroll-behavior: smooth;} */
+.createTrips_wrap .search_wrap .search_result_wrap .result_place_area{padding: 8px 20px 0 10px;}
+.createTrips_wrap .search_wrap .search_result_wrap .result_place_area::-webkit-scrollbar{width: 8px;}
+.createTrips_wrap .search_wrap .search_result_wrap .result_place_area::-webkit-scrollbar-thumb{background-color: #D6D6D6; border-radius: 8px;}
+.createTrips_wrap .search_wrap .search_result_wrap .result_place_area::-webkit-scrollbar-track{background-color: #f2f2f2; border-radius: 8px;}
 .createTrips_wrap .search_wrap #pagination{display: flex; justify-content: center; align-items: center; gap: 4px; padding: 20px 0;}
 .createTrips_wrap .search_wrap #pagination>a{display: block; width: 30px; font-size: 12px; line-height: 30px; text-align: center;}
 .createTrips_wrap .search_wrap #pagination>a.on{border-radius: 50%; background-color: var(--main_03); font-family: pt-eb; font-size: 13px;}
 .createTrips_wrap .search_wrap>.btn_close{position: absolute; display: block; top: 0; right: 0; width: 30px; height: 30px; background: url(/public/images/icon_close_gray.svg) no-repeat center / contain;}
 
-.createTrips_wrap .pagination{display: flex; gap: 4px; justify-content: center; margin: 12px 0;}
+.createTrips_wrap .pagination{display: flex; gap: 4px; justify-content: center; margin-top: 12px;}
 .createTrips_wrap .pagination>.page_item{display: block; width: 24px; height: 24px; font-size: 14px; line-height: 24px; text-align: center;}
 .createTrips_wrap .pagination>.page_item.active{font-family: pt-b;}
 .createTrips_wrap .pagination>.page_item.prev{background: url(/public/images/icon_arrow_prev_black_40.svg) no-repeat center / contain;}

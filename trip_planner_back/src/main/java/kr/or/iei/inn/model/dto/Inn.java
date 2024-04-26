@@ -26,4 +26,5 @@ public class Inn {
 	private double reviewRate;
 	private String filepath;
 	private String innTypeStr;
+	private String partnerTel;
 }
