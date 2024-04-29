@@ -6,9 +6,11 @@
 .main_hero .hero_ticket>.details_area{flex-grow: 1; border-radius: 20px; overflow: hidden;}
 
 .hero_ticket>.search_area>.sa_header{position: relative; height: 90px; margin-right: 8px; background: var(--main_01) url(/public/images/icon_logo_bag_white.svg) no-repeat left 30px center / 48px;}
-.hero_ticket>.search_area>.sa_header>.dots{position: absolute; right: -16px; top: 0; bottom:0; width: 16px; background: radial-gradient( transparent 0px, transparent 5px, var(--main_01) 0px, var(--main_01)); background-size: 16px 16px; background-repeat: repeat-y; background-position-y: -6px;}
+/* .hero_ticket>.search_area>.sa_header>.dots{position: absolute; right: -16px; top: 0; bottom:0; width: 16px; background: radial-gradient( transparent 0px, transparent 5px, var(--main_01) 0px, var(--main_01)); background-size: 16px 16px; background-repeat: repeat-y; background-position-y: -6px;} */
+.hero_ticket>.search_area>.sa_header>.dots{position: absolute; right: -16px; top: 0; bottom:0; width: 16px; background: url(/public/images/img_dot_blue.svg) repeat-y left top 12px / 16px;}
 .hero_ticket>.search_area>.search_wrap{position: relative; display: flex; height: calc(100% - 90px); margin-right: 8px; padding: 24px 8px 24px 107px; background: #fff url(/public/images/img_barcode.svg) no-repeat left top / auto 320px;}
-.hero_ticket>.search_area>.search_wrap>.dots{position: absolute; right: -16px; top: 0; bottom:0; width: 16px; background: radial-gradient( transparent 0px, transparent 5px, white 0px, white ); background-size: 16px 16px; background-repeat: repeat-y; background-position-y: 0;}
+/* .hero_ticket>.search_area>.search_wrap>.dots{position: absolute; right: -16px; top: 0; bottom:0; width: 16px; background: radial-gradient( transparent 0px, transparent 5px, white 0px, white ); background-size: 16px 16px; background-repeat: repeat-y; background-position-y: 0;} */
+.hero_ticket>.search_area>.search_wrap>.dots{position: absolute; right: -16px; top: 0; bottom:0; width: 16px; background: url(/public/images/img_dot_white.svg) repeat-y left top 2px / 16px;}
 .hero_ticket>.search_area>.search_wrap>.input_area{width: 50%; max-width: 370px; display: flex; flex-direction: column; gap: 16px; padding: 0 20px; background: url(/public/images/img_logo_airplane.svg) no-repeat right 20px bottom 6px / auto 60px;}
 .hero_ticket>.search_area>.search_wrap .input_wrap+.input_wrap{margin: 0;}
 .hero_ticket>.search_area>.search_wrap .input_title>label{font-family: pt-b;}
@@ -30,10 +32,12 @@
 .hero_ticket .css-1laqsz7-MuiInputAdornment-root{margin-left: 0;}
 
 .hero_ticket>.details_area>.da_header{position: relative; margin-left: 8px; background-color: var(--main_01);}
-.hero_ticket>.details_area>.da_header>.dots{position: absolute; left: -16px; top: 0; bottom:0; width: 16px; background: radial-gradient( transparent 0px, transparent 5px, var(--main_01) 0px, var(--main_01)); background-size: 16px 16px; background-repeat: repeat-y; background-position-y: -6px;}
+/* .hero_ticket>.details_area>.da_header>.dots{position: absolute; left: -16px; top: 0; bottom:0; width: 16px; background: radial-gradient( transparent 0px, transparent 5px, var(--main_01) 0px, var(--main_01)); background-size: 16px 16px; background-repeat: repeat-y; background-position-y: -6px;} */
+.hero_ticket>.details_area>.da_header>.dots{position: absolute; left: -16px; top: 0; bottom:0; width: 16px; background: url(/public/images/img_dot_blue.svg) repeat-y left top 12px / 16px;}
 .hero_ticket>.details_area>.da_header>.trip_planner{display: block; color: #fff; font-family: pt-eb; font-size: 40px; line-height: 90px; text-align: center;}
 .hero_ticket>.details_area>.search_detail_wrap{position: relative; margin-left: 8px; padding: 24px 20px 24px 12px; background-color: #fff;}
-.hero_ticket>.details_area>.search_detail_wrap>.dots{position: absolute; left: -16px; top: 0; bottom:0; width: 16px; background: radial-gradient( transparent 0px, transparent 5px, white 0px, white ); background-size: 16px 16px; background-repeat: repeat-y; background-position-y: 0;}
+/* .hero_ticket>.details_area>.search_detail_wrap>.dots{position: absolute; left: -16px; top: 0; bottom:0; width: 16px; background: radial-gradient( transparent 0px, transparent 5px, white 0px, white ); background-size: 16px 16px; background-repeat: repeat-y; background-position-y: 0;} */
+.hero_ticket>.details_area>.search_detail_wrap>.dots{position: absolute; left: -16px; top: 0; bottom:0; width: 16px; background: url(/public/images/img_dot_white.svg) repeat-y left top 2px / 16px;}
 .hero_ticket>.details_area>.search_detail_wrap>.detail_box{padding: 0 20px;}
 .hero_ticket>.details_area .detail_box>.detail_item{display: flex; gap: 40px; padding: 20px 0;}
 .hero_ticket>.details_area .detail_box>.detail_item+.detail_item{margin-top: -1px; border-top: 1px solid #EBEBEB;}

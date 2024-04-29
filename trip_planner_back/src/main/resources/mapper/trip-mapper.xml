@@ -18,7 +18,7 @@
 	</select>
 	
 	<select id="selectSearchInns" resultType="inn">
-		select * from (select rownum rnum, i.* from (select case when inn_type = 1 then '호텔' when inn_type = 2 then '리조트' when inn_type = 3 then '펜션' when inn_type = 4 then '게스트하우스' end inn_type_str, (select partner_name from partner_tbl where partner_no=inn.partner_no) partner_name, (select partner_tel from partner_tbl where partner_no=inn.partner_no) partner_tel, inn_addr from inn_tbl inn order by partner_name)i where partner_name||inn_addr like '%'||#{keyword}||'%') where rnum between #{start} and #{end}
+		select * from (select rownum rnum, i.* from (select inn_no, case when inn_type = 1 then '호텔' when inn_type = 2 then '리조트' when inn_type = 3 then '펜션' when inn_type = 4 then '게스트하우스' end inn_type_str, (select partner_name from partner_tbl where partner_no=inn.partner_no) partner_name, (select partner_tel from partner_tbl where partner_no=inn.partner_no) partner_tel, inn_addr from inn_tbl inn order by partner_name)i where partner_name||inn_addr like '%'||#{keyword}||'%') where rnum between #{start} and #{end}
 	</select>
 
 	<!--
