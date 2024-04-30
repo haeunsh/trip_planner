@@ -17,50 +17,78 @@ const CreateTrips = (props)=>{
   const isLogin = props.isLogin;
   const navigate = useNavigate();
 
-  // if (!isLogin) {
-  //   Swal.fire({
-  //     icon: "warning",
-  //     text: "로그인 후 이용이 가능합니다.",
-  //     confirmButtonText: "닫기",
-  //   }).then(navigate("/"));
-  // }
+  if(!isLogin) {
+    Swal.fire({
+      icon: "warning",
+      text: "로그인 후 이용이 가능합니다.",
+      confirmButtonText: "닫기",
+    }).then(navigate("/"));
+  }
 
-  /***** 완성 시 등록할 data *****/
+  /***** 완성 시 등록할 데이터 *****/
   const [tripTitle, setTripTitle] = useState("");
   const [tripStartDate, setTripStartDate] = useState();
   const [tripEndDate, setTripEndDate] = useState();
-  const [tripDays, setTripDays] = useState([]);
   const [tripDetailList, setTripDetailList] = useState([]);
   
   /***** 화면용 states *****/
+  const [tripDays, setTripDays] = useState([]);
   const [openSearchWrap, setOpenSearchWrap] = useState(false);
   const [searchInput, setSearchInput] = useState("");
   const [keyword, setKeyword] = useState("");
   const resultWrap = useRef();
+  const tripsPlanWrap = useRef();
   const placeRef = useRef();
   const activePlaceRef = useRef();
+  const myPlaceRef = useRef();
+  const activeMyPlaceRef = useRef();
   const activeInnRef = useRef();
   const [placeReqPage, setPlaceReqPage] = useState(-1);
   const [placeList, setPlaceList] = useState([]);
   const [placePageInfo, setPlacePageInfo] = useState({});
   const [activePlaceIndex, setActivePlaceIndex] = useState(-1);
   const [activeInnIndex, setActiveInnIndex] = useState(-1);
+  const [activeMyPlaceIndex, setActiveMyPlaceIndex] = useState([]);
   const [innReqPage, setInnReqPage] = useState(-1);
   const [innList, setInnList] = useState([]);
   const [innPageInfo, setInnPageInfo] = useState({});
   const [selectPlaceList, setSelectPlaceList] = useState([]);
   const [selectPlaceListIndex, setSelectPlaceListIndex] = useState(-1);
-  const [totalCost, setTotalCost] = useState(0);
   const [openCostModal, setOpenCostModal] = useState(false);
   const [openTodoModal, setOpenTodoModal] = useState(false);
   const [modalTitle, setModalTitle] = useState("");
-  const [tripCost, setTripCost] = useState("");
+  const [tripCost, setTripCost] = useState(0);
   const [tripTodo, setTripTodo] = useState("");
   const [selectPlaceIndex, setSelectPlaceIndex] = useState(-1);
   
+  console.log(dayjs(tripStartDate).format("YYYY-MM-DD"));
   /***** functions *****/
+  //*** 여행 등록하기 ***//
+  const createTripsFunc = ()=>{
+    const trip = {tripTitle: tripTitle, tripStartDate: dayjs(tripStartDate).format("YYYY-MM-DD"), tripEndDate: dayjs(tripEndDate).format("YYYY-MM-DD"), tripDetailListStr: JSON.stringify(tripDetailList)};
+
+    if(tripTitle === ""){
+      trip.tripTitle = "국내 여행";
+    }
+
+    console.log(trip);
+    console.log(tripDetailList);
+    // axios.post(backServer + "/trip", trip)
+    // .then((res) => {
+    //   if(res.data.message === "success"){
+    //     Swal.fire({icon: "success", title: "등록 완료", text: "여행 일정이 등록되었습니다.", confirmButtonText: "닫기"});
+    //     // navigate("/mypage/myTrips");
+    //   }
+    // })
+    // .catch((res) => {
+    //   console.log(res);
+    //   Swal.fire({icon: "warning", text: "문제가 발생했습니다. 잠시 후 다시 시도해주세요.", confirmButtonText: "닫기"})
+    // })
+  }
+
   //장소 검색창 닫았을 때
   const closeSearchWrapFunc = ()=>{
+    setActiveMyPlaceIndex([]);
     setSelectPlaceListIndex(-1);
     setOpenSearchWrap(false);
   }
@@ -74,7 +102,6 @@ const CreateTrips = (props)=>{
   //장소 검색(여행지)
   useEffect(()=>{
     const searchObj = {keyword: keyword, reqPage: placeReqPage};
-    // console.log(searchObj);
     if(keyword !== ""){
       axios.post(backServer + "/trip/searchPlace", searchObj)
       .then((res)=>{
@@ -90,7 +117,6 @@ const CreateTrips = (props)=>{
   //장소 검색(숙소)
   useEffect(()=>{
     const searchObj = {keyword: keyword, reqPage: innReqPage};
-    // console.log(searchObj);
     if(keyword !== ""){
       axios.post(backServer + "/trip/searchInns", searchObj)
       .then((res)=>{
@@ -111,16 +137,13 @@ const CreateTrips = (props)=>{
   }
   //장소 클릭 시 함수
   const clickPlaceFunc = (place, index)=>{
+    setActiveMyPlaceIndex([]);
     if(place.type === "place"){
       setActiveInnIndex(-1);
       setActivePlaceIndex(index);
       showInfoWindow(infoWindows, infoWindows[index], place);
     }
     if(place.type === "inn"){
-      // console.log(innInfoWindows);
-      // console.log(innInfoWindows[index]);
-      // console.log(innInfos);
-      // console.log(innInfos[index]);
       setActiveInnIndex(index);
       setActivePlaceIndex(-1);
       showInfoWindow(innInfoWindows, innInfoWindows[index], innInfos[index]);
@@ -138,46 +161,60 @@ const CreateTrips = (props)=>{
       resultWrap.current.scrollTop = activeInnRef.current.offsetTop - 40;
     }
   },[activeInnIndex]);
+  //내 장소 스크롤 이벤트
+  useEffect(()=>{
+    if(activeMyPlaceRef.current){
+      // console.log(activeMyPlaceRef.current.offsetTop);
+      // console.log(activeMyPlaceRef.current.parentNode.parentNode.parentNode.offsetTop - tripsPlanWrap.current.offsetTop);
+      tripsPlanWrap.current.scrollTop = activeMyPlaceRef.current.parentNode.parentNode.parentNode.offsetTop - tripsPlanWrap.current.offsetTop + activeMyPlaceRef.current.offsetTop;
+    }
+  },[activeMyPlaceIndex]);
   //일정 추가 함수
-  const addPlaceFunc = (place)=>{
+  const addPlaceFunc = (place, index)=>{
+    if(place.type === "place"){
+      myInfoWindows.push(infoWindows[index])
+      setMyInfoWindows([...myInfoWindows]);
+    }
+    if(place.type === "inn"){
+      myInfoWindows.push(innInfoWindows[index])
+      setMyInfoWindows([...myInfoWindows]);
+    }
     place.tripDay = tripDays[selectPlaceListIndex];
     place.tripRoute = selectPlaceList[selectPlaceListIndex].length === 0 ? 1 : selectPlaceList[selectPlaceListIndex].length+1;
     selectPlaceList[selectPlaceListIndex].push(place);
     setSelectPlaceList([...selectPlaceList]);
   }
-  // console.log(selectPlaceList);
   //비용 추가 함수
-  const addCostFunc = () => {
-    selectPlaceList[selectPlaceListIndex][selectPlaceIndex].tripCost = tripCost;
+  const addCostFunc = ()=>{
+    selectPlaceList[selectPlaceListIndex][selectPlaceIndex].tripCost = Number(tripCost);
     setSelectPlaceList([...selectPlaceList]);
-    setTripCost("");
+    setTripCost(0);
     setOpenCostModal(false);
   }
   //할 일 추가 함수
-  const addTodoFunc = () => {
+  const addTodoFunc = ()=>{
     selectPlaceList[selectPlaceListIndex][selectPlaceIndex].tripTodo = tripTodo;
     setSelectPlaceList([...selectPlaceList]);
     setTripTodo("")
     setOpenTodoModal(false);
   }
   //비용 추가 모달 close 함수
-  const closeCostModalFunc = () => {
-    setTripCost("");
+  const closeCostModalFunc = ()=>{
+    setTripCost(0);
     setOpenCostModal(false);
   }
   //할 일 추가 모달 close 함수
-  const closeTodoModalFunc = () => {
+  const closeTodoModalFunc = ()=>{
     setTripTodo("");
     setOpenTodoModal(false);
-  }
-  //여행 등록하기 함수
-  const createTripsFunc = () => {
-    console.log(tripDetailList);
   }
 
   /***** 지도 *****/
   /* 지도 states */
   const [map, setMap] = useState(null);
+  const [mapRoutes, setMapRoutes] = useState([]);
+  const [linePath, setLinePath] = useState([]);
+  const [polylines, setPolylines] = useState([]);
   const [markers, setMarkers] = useState([]);
   const [infoWindows, setInfoWindows] = useState([]);
   const [innInfos, setInnInfos] = useState([]);
@@ -202,6 +239,26 @@ const CreateTrips = (props)=>{
     }
     infoWindows.length = 0;
     setInfoWindows([...infoWindows]);
+  }
+  //맵루트 번호 초기화 함수
+  function removeMapRoute(){
+    for (let i=0; i<mapRoutes.length; i++) {
+      mapRoutes[i].setMap(null);
+    }   
+    mapRoutes.length = 0;
+    setMapRoutes([...mapRoutes]);
+  }
+  //맵루트 라인 초기화 함수들
+  function removeLinePath(){
+    linePath.length = 0;
+    setLinePath([...linePath]);
+  }
+  function removePolyline(){
+    for (let i=0; i<polylines.length; i++) {
+      polylines[i].setMap(null);
+    }   
+    polylines.length = 0;
+    setPolylines([...polylines]);
   }
   //인포윈도우 표시 함수
   function showInfoWindow(infoWdws, infoWdw, place){
@@ -234,6 +291,9 @@ const CreateTrips = (props)=>{
     for(let i=0; i<innInfoWindows.length; i++) {
       innInfoWindows[i].setMap(null);
     }
+    for(let i=0; i<myInfoWindows.length; i++) {
+      myInfoWindows[i].setMap(null);
+    }
     infoWdw.setMap(map);
     map.setCenter(new kakao.maps.LatLng(place.placeLat, place.placeLng));
   }
@@ -260,18 +320,27 @@ const CreateTrips = (props)=>{
     //숙소 검색 시 좌표 값을 받아오기 위한 Geocoder
     const geocoder = new kakao.maps.services.Geocoder();
 
-    //마커와 인포윈도우 최초 초기화
-    removeMarker(markers, setMarkers);
-    removeMarker(innMarkers, setInnMarkers);
-    removeInfoWindow(infoWindows, setInfoWindows);
-    removeInfoWindow(innInfoWindows, setInnInfoWindows);
-    setActivePlaceIndex(-1);
-    setActiveInnIndex(-1);
-
+    //초기화
+    // removeMarker(markers, setMarkers);
+    // removeMarker(innMarkers, setInnMarkers);
+    // removeMarker(myMarkers, setMyMarkers);
+    // removeInfoWindow(infoWindows, setInfoWindows);
+    // removeInfoWindow(innInfoWindows, setInnInfoWindows);
+    // removeInfoWindow(myInfoWindows, setMyInfoWindows);
+    // setActivePlaceIndex(-1);
+    // setActiveInnIndex(-1);
+    // setActiveMyPlaceIndex([]);
+    removeMapRoute();
+    removeLinePath();
+    removePolyline();
+    
     //마커 표시
     if(openSearchWrap){
+      removeMarker(markers, setMarkers);
+      removeMarker(innMarkers, setInnMarkers);
+
       placeList.forEach((place, index)=>{
-        displayMarker(markers, setMarkers, infoWindows, setInfoWindows, setActivePlaceIndex, place, index);
+        displayMarker("placeMarker", markers, setMarkers, infoWindows, setInfoWindows, setActivePlaceIndex, place, index);
       })
       const innArr = new Array();
       innList.forEach((inn, index)=>{
@@ -281,16 +350,42 @@ const CreateTrips = (props)=>{
             inn.placeLng = result[0].x;
             // const inns = {placeLat: result[0].y, placeLng: result[0].x, placeName: inn.partnerName, placeAddress: inn.innAddr, placePhone: inn.partnerTel};
             innArr[index] = inn;
-            displayMarker(innMarkers, setInnMarkers, innInfoWindows, setInnInfoWindows, setActiveInnIndex, inn, index);
+            displayMarker("innMarker", innMarkers, setInnMarkers, innInfoWindows, setInnInfoWindows, setActiveInnIndex, inn, index);
           }
         };
         geocoder.addressSearch(inn.innAddr, callback);
       })
       setInnInfos(innArr);
+    }else{
+      //초기화
+      removeMarker(markers, setMarkers);
+      removeMarker(innMarkers, setInnMarkers);
+      removeMarker(myMarkers, setMyMarkers);
+      removeInfoWindow(infoWindows, setInfoWindows);
+      removeInfoWindow(innInfoWindows, setInnInfoWindows);
+      removeInfoWindow(myInfoWindows, setMyInfoWindows);
+      setActivePlaceIndex(-1);
+      setActiveInnIndex(-1);
+      setActiveMyPlaceIndex([]);
     }
 
-    //마커 표시 함수
-    function displayMarker(markers, setMarkers, infoWindows, setInfoWindows, setActiveIndex, place, index){
+    //내 장소 마커 표시
+    selectPlaceList.forEach((list, index)=>{
+      for(let i=0; i<list.length; i++){
+        const place = list[i];
+        displayMarker("myMarker", myMarkers, setMyMarkers, myInfoWindows, setMyInfoWindows, setActiveMyPlaceIndex, place, [index, i]);
+      }
+    })
+    //내 장소 맵루트 표시
+    selectPlaceList.forEach((list, index)=>{
+      for(let i=0; i<list.length; i++){
+        const place = list[i];
+        displayMapRoute(place, index);
+      }
+    })
+
+    //** 마커 표시 함수 **//
+    function displayMarker(type, markers, setMarkers, infoWindows, setInfoWindows, setActiveIndex, place, index){
       bounds.extend(new kakao.maps.LatLng(place.placeLat, place.placeLng));
   
       const marker = new kakao.maps.Marker({
@@ -303,10 +398,14 @@ const CreateTrips = (props)=>{
 
       map.setBounds(bounds);
 
+      let infoWindowYAnchor = 1.4;
+      if(type === "myMarker"){
+        infoWindowYAnchor = 1.65;
+      }
       //마커마다 인포윈도우 생성
       const infoWindow = new kakao.maps.CustomOverlay({
         zIndex: 45,
-        yAnchor: 1.4
+        yAnchor: infoWindowYAnchor
       });
       infoWindows.push(infoWindow);
       setInfoWindows([...infoWindows]);
@@ -315,11 +414,56 @@ const CreateTrips = (props)=>{
       kakao.maps.event.addListener(marker, 'click', function() {
         setActivePlaceIndex(-1);
         setActiveInnIndex(-1);
+        setActiveMyPlaceIndex(-1);
         setActiveIndex(index);
         showInfoWindow(infoWindows, infoWindow, place);
       })
     }
-  }, [map, openSearchWrap, placeList, innList])
+
+    //** 맵루트 표시 함수 **//
+    function displayMapRoute(place, index){
+      let colorIndex = 0;
+      for(let i=0; i<index+1; i++){
+        colorIndex = colorIndex+1;
+        if(i%4 === 0){
+            colorIndex = 1;
+        }
+      }
+      //맵루트 생성
+      const mapRoute = new kakao.maps.CustomOverlay({
+        map: map,
+        position: new kakao.maps.LatLng(place.placeLat, place.placeLng),
+        content: "<div class='map_route color"+colorIndex+"'>"+(place.tripRoute)+"</div>",
+        yAnchor: 2.8,
+        zIndex: 40,
+        clickable: true
+      });
+      mapRoutes.push(mapRoute);
+      setMapRoutes([...mapRoutes]);
+
+      //장소에 이을 선 좌표 배열 추가
+      linePath.push(new kakao.maps.LatLng(place.placeLat, place.placeLng));
+
+      //선 생성
+      const polyline = new kakao.maps.Polyline({
+        path: linePath,
+        strokeWeight: 5,
+        strokeColor: '#E9511C',
+        strokeOpacity: 0.6,
+        strokeStyle: 'dashed'
+      });
+
+      polylines.push(polyline);
+      setPolylines([...polylines]);
+
+      //선 표시
+      for (let i=0; i<polylines.length; i++) {
+        polylines[i].setMap(null);
+      }
+      polyline.setMap(map);
+      map.setBounds(bounds);
+    }
+  }, [map, openSearchWrap, placeList, innList, selectPlaceList])
 
   /***** datepicker *****/
   useEffect(()=>{
@@ -333,7 +477,7 @@ const CreateTrips = (props)=>{
       })
       selectPlaceList.length = 0;
       tripDetailList.length = 0;
-      console.log(copySelectPlaceList);
+      // console.log(copySelectPlaceList);
 
       while(true){
         const tripDate = dayjs(new Date(tripStartDate.$d.getTime()+86400000*tripDayCount)).format("YYYY-MM-DD");
@@ -404,19 +548,26 @@ const CreateTrips = (props)=>{
                   <DemoContainer components={['DatePicker', 'DatePicker']}>
                     <DatePicker onChange={(newValue)=>{
                       setTripStartDate(newValue);
-                    }} format="YYYY-MM-DD" />
+                    }} format="YYYY-MM-DD" disablePast />
                     <DatePicker onChange={(newValue)=>{
                       setTripEndDate(newValue);
-                    }} format="YYYY-MM-DD" />
+                    }} format="YYYY-MM-DD" disablePast />
                   </DemoContainer>
                 </LocalizationProvider>
               </div>
             </div>
-            <div className="trips_plan_wrap">
+            <div className="trips_plan_wrap" ref={tripsPlanWrap}>
               {
                 tripDays.map((day, index)=>{
+                  let totalCost = 0;
+                  for(let i=0; i<selectPlaceList[index].length; i++){
+                    if(!selectPlaceList[index][i].tripCost){
+                      selectPlaceList[index][i].tripCost = 0;
+                    }
+                    totalCost += Number(selectPlaceList[index][i].tripCost);
+                  }
                   return(
-                    <SetDayWrap key={"day"+index} tripDays={tripDays} tripDate={day} dayIndex={index} totalCost={totalCost} setOpenSearchWrap={setOpenSearchWrap} selectPlaceList={selectPlaceList} setSelectPlaceList={setSelectPlaceList} selectPlaceListIndex={selectPlaceListIndex} setSelectPlaceListIndex={setSelectPlaceListIndex} setOpenCostModal={setOpenCostModal} setOpenTodoModal={setOpenTodoModal} setModalTitle={setModalTitle} setSelectPlaceIndex={setSelectPlaceIndex} setTripCost={setTripCost} setTripTodo={setTripTodo} />
+                    <SetDayWrap key={"day"+index} tripDays={tripDays} tripDate={day} dayIndex={index} setOpenSearchWrap={setOpenSearchWrap} selectPlaceList={selectPlaceList} setSelectPlaceList={setSelectPlaceList} selectPlaceListIndex={selectPlaceListIndex} setSelectPlaceListIndex={setSelectPlaceListIndex} setOpenCostModal={setOpenCostModal} setOpenTodoModal={setOpenTodoModal} setModalTitle={setModalTitle} setSelectPlaceIndex={setSelectPlaceIndex} setTripCost={setTripCost} setTripTodo={setTripTodo} totalCost={totalCost} activeMyPlaceIndex={activeMyPlaceIndex} setActiveMyPlaceIndex={setActiveMyPlaceIndex} setActivePlaceIndex={setActivePlaceIndex} setActiveInnIndex={setActiveInnIndex} showInfoWindow={showInfoWindow} myInfoWindows={myInfoWindows} myPlaceRef={myPlaceRef} activeMyPlaceRef={activeMyPlaceRef} />
                   )
                 })
               }
@@ -457,7 +608,7 @@ const CreateTrips = (props)=>{
                                   <div className="item_btn_wrap">
                                     <Button text="일정 추가" class="btn_primary outline sm btn_addPlace" clickEvent={(e)=>{
                                       // e.stopPropagation();
-                                      return addPlaceFunc(place);
+                                      addPlaceFunc(place, index);
                                     }} />
                                   </div>
                                 </div>
@@ -494,7 +645,7 @@ const CreateTrips = (props)=>{
                                   <div className="item_btn_wrap">
                                     <Button text="일정 추가" class="btn_primary outline sm btn_addPlace" clickEvent={(e)=>{
                                       // e.stopPropagation();
-                                      return addPlaceFunc(inn);
+                                      addPlaceFunc(inn, index);
                                     }} />
                                   </div>
                                 </div>
@@ -506,12 +657,7 @@ const CreateTrips = (props)=>{
                     </ul>
                     {
                       innList.length !== 0 ? (
-                        <>
-                          <Pagination pageInfo={innPageInfo} reqPage={innReqPage} setReqPage={setInnReqPage} />
-                          <div className="btn_area">
-                            <Button text="숙소 검색 결과 더보기" class="btn_primary outline md" />
-                          </div>
-                        </>
+                        <Pagination pageInfo={innPageInfo} reqPage={innReqPage} setReqPage={setInnReqPage} />
                       ) : ""
                     }
                   </div>
@@ -550,7 +696,6 @@ const SetDayWrap = (props)=>{
   const tripDays = props.tripDays;
   const tripDate = props.tripDate;
   const dayIndex = props.dayIndex;
-  const totalCost = props.totalCost;
   const setOpenSearchWrap = props.setOpenSearchWrap;
   const selectPlaceList = props.selectPlaceList;
   const setSelectPlaceList = props.setSelectPlaceList;
@@ -562,6 +707,16 @@ const SetDayWrap = (props)=>{
   const setSelectPlaceIndex = props.setSelectPlaceIndex;
   const setTripCost = props.setTripCost;
   const setTripTodo = props.setTripTodo;
+  const totalCost = props.totalCost;
+  const activeMyPlaceIndex = props.activeMyPlaceIndex;
+  const setActiveMyPlaceIndex = props.setActiveMyPlaceIndex;
+  const setActivePlaceIndex = props.setActivePlaceIndex;
+  const setActiveInnIndex = props.setActiveInnIndex;
+  const showInfoWindow = props.showInfoWindow;
+  const myInfoWindows = props.myInfoWindows;
+  const myPlaceRef = props.myPlaceRef;
+  const activeMyPlaceRef = props.activeMyPlaceRef;
+
   //루트번호에 컬러인덱스
   let colorIndex = 0;
   for(let i=0; i<dayIndex+1; i++){
@@ -576,7 +731,7 @@ const SetDayWrap = (props)=>{
     setSelectPlaceListIndex(dayIndex);
   }
   //비용 추가 버튼 클릭시
-  const openCostModalFunc = (place, index) => {
+  const openCostModalFunc = (place, index)=>{
     setOpenCostModal(true);
     setModalTitle(place.placeName);
     setSelectPlaceListIndex(dayIndex);
@@ -584,7 +739,7 @@ const SetDayWrap = (props)=>{
     setTripCost(place.tripCost);
   }
   //할 일 추가 버튼 클릭시
-  const openTodoModalFunc = (place, index) => {
+  const openTodoModalFunc = (place, index)=>{
     setOpenTodoModal(true);
     setModalTitle(place.placeName);
     setSelectPlaceListIndex(dayIndex);
@@ -592,28 +747,73 @@ const SetDayWrap = (props)=>{
     setTripTodo(place.tripTodo);
   }
   //장소 순서 변경 버튼 클릭시(내리기 버튼)
-  const tripRouteDown = (index) => {
+  const tripRouteDownFunc = (index)=>{
+    //dayIndex가 마지막이 아니고, index는 마지막일 때(다음 날로 넘겨야할 때)
     if(dayIndex !== selectPlaceList.length-1 && index === selectPlaceList[dayIndex].length-1){
       const thisItem = selectPlaceList[dayIndex].splice(index, 1);
       thisItem[0].oldTripDay = thisItem[0].tripDay;
       thisItem[0].tripDay = tripDays[dayIndex+1];
+      //순서 변경으로 영향 받는 아래쪽 모든 아이템들에 oldTripDay 주기
+      for(let i=0;i<selectPlaceList[dayIndex+1].length;i++){
+        selectPlaceList[dayIndex+1][i].oldTripDay = selectPlaceList[dayIndex+1][i].tripDay;
+      }
       selectPlaceList[dayIndex+1].splice(0,0,thisItem[0]);
       setSelectPlaceList([...selectPlaceList]);
-    }else if(dayIndex !== selectPlaceList.length-1 && index !== selectPlaceList[dayIndex].length-1){
+    }//index가 마지막이 아닐 때(해당 날짜 안에서 순서가 내려갈 때)
+    else if(index !== selectPlaceList[dayIndex].length-1){
+      //순서 변경으로 영향 받는 바로 아래 아이템에 oldTripDay 주기
+      selectPlaceList[dayIndex][index+1].oldTripDay = selectPlaceList[dayIndex][index+1].tripDay;
+
       const thisItem = selectPlaceList[dayIndex].splice(index, 1);
       thisItem[0].oldTripDay = thisItem[0].tripDay;
       thisItem[0].tripDay = tripDays[dayIndex];
-      selectPlaceList[dayIndex].splice(index+1,0,thisItem[0]);
-      setSelectPlaceList([...selectPlaceList]);
-    }else if(dayIndex === selectPlaceList.length-1 && index !== selectPlaceList[dayIndex].length-1){
-      const thisItem = selectPlaceList[dayIndex].splice(index, 1);
-      thisItem[0].oldTripDay = thisItem[0].tripDay;
-      thisItem[0].tripDay = tripDays[dayIndex];
-      selectPlaceList[dayIndex].splice(index+1,0,thisItem[0]);
+      selectPlaceList[dayIndex].splice(index+1, 0, thisItem[0]);
       setSelectPlaceList([...selectPlaceList]);
     }
   }
+  //장소 순서 변경 버튼 클릭시(올리기 버튼)
+  const tripRouteUpFunc = (index)=>{
+//dayIndex가 첫 번째가 아니고 index는 첫 번째인 경우(이전 날로 넘겨야할 때)
+    if(dayIndex !== 0 && index === 0){
+      const thisItem = selectPlaceList[dayIndex].splice(index, 1);
+      thisItem[0].oldTripDay = thisItem[0].tripDay;
+      thisItem[0].tripDay = tripDays[dayIndex-1];
+      //순서 변경으로 영향 받는 아래쪽 모든 아이템들에 oldTripDay 주기
+      for(let i=0;i<selectPlaceList[dayIndex].length;i++){
+        selectPlaceList[dayIndex][i].oldTripDay = selectPlaceList[dayIndex][i].tripDay;
+      }
+      selectPlaceList[dayIndex-1].push(thisItem[0]);
+      setSelectPlaceList([...selectPlaceList]);
+    }//index가 첫 번째가 아닐 때(해당 날짜 안에서 순서가 올라갈 때)
+    else if(index !== 0){
+      //순서 변경으로 영향 받는 바로 위 아이템에 oldTripDay 주기
+      selectPlaceList[dayIndex][index-1].oldTripDay = selectPlaceList[dayIndex][index-1].tripDay;
 
+      const thisItem = selectPlaceList[dayIndex].splice(index, 1);
+      thisItem[0].oldTripDay = thisItem[0].tripDay;
+      thisItem[0].tripDay = tripDays[dayIndex];
+      selectPlaceList[dayIndex].splice(index-1, 0, thisItem[0]);
+      setSelectPlaceList([...selectPlaceList]);
+    }
+  }
+  //장소 삭제 버튼 클릭시
+  const deletePlaceFunc = (index)=>{
+    setActiveMyPlaceIndex([]);
+    selectPlaceList[dayIndex].splice(index, 1);
+    setSelectPlaceList([...selectPlaceList]);
+  }
+  //할 일 삭제 버튼 클릭시
+  const deleteTodoFunc = (index)=>{
+    selectPlaceList[dayIndex][index].tripTodo = "";
+    setSelectPlaceList([...selectPlaceList]);
+  }
+  //내 장소 클릭 시 함수
+  const clickPlaceFunc = (place, index)=>{
+    setActiveMyPlaceIndex([dayIndex, index]);
+    setActivePlaceIndex(-1);
+    setActiveInnIndex(-1);
+    showInfoWindow(myInfoWindows, myInfoWindows[index], place);
+  }
   return(
     <div className="set_day_wrap">
       <div className="day_title_wrap">
@@ -629,7 +829,7 @@ const SetDayWrap = (props)=>{
                 place.oldTripRoute = place.tripRoute;
                 place.tripRoute = index+1;
                 return(
-                  <li key={"select_place"+dayIndex+"-"+index} className="item">
+                  <li key={"select_place"+dayIndex+"-"+index} className={activeMyPlaceIndex[0] === dayIndex && activeMyPlaceIndex[1] === index ? "item active" : "item"} ref={activeMyPlaceIndex[0] === dayIndex && activeMyPlaceIndex[1] === index ? activeMyPlaceRef : myPlaceRef} onClick={()=>{clickPlaceFunc(place, index)}}>
                     <div className="tripPlace">
                       <div className={"tripRoute_no color"+colorIndex}>{index+1}</div>
                       <div className="item_box">
@@ -639,11 +839,15 @@ const SetDayWrap = (props)=>{
                             <span>{place.placeCategory ? place.placeCategory : place.innTypeStr}</span>
                             <span>{place.placeAddress ? place.placeAddress : place.innAddr}</span>
                           </div>
-                          <div className="trip_cost" onClick={()=>{openCostModalFunc(place, index)}}>{place.tripCost}</div>
+                          {
+                            place.tripCost !== 0 ? (
+                              <div className="trip_cost" onClick={()=>{openCostModalFunc(place, index)}}>{place.tripCost}</div>
+                            ) : ""
+                          }
                         </div>
                         <div className="item_btn_wrap">
-                          <button type="button" className="btn_changeOrder down" onClick={()=>{tripRouteDown(index)}}><span className="hidden">내리기</span></button>
-                          <button type="button" className="btn_changeOrder up"><span className="hidden">올리기</span></button>
+                          <button type="button" className="btn_changeOrder down" onClick={()=>{tripRouteDownFunc(index)}}><span className="hidden">내리기</span></button>
+                          <button type="button" className="btn_changeOrder up" onClick={()=>{tripRouteUpFunc(index)}}><span className="hidden">올리기</span></button>
                         </div>
                         {
                           place.tripCost && place.tripTodo ? "" : (
@@ -657,15 +861,15 @@ const SetDayWrap = (props)=>{
                             </div>
                           )
                         }
-                        <button type="button" className="btn_delete"><span className="hidden">삭제</span></button>
+                        <button type="button" className="btn_delete" onClick={()=>{deletePlaceFunc(index)}}><span className="hidden">삭제</span></button>
                       </div>
                     </div>
                     {place.tripTodo ? (
                       <div className="tripTodo">
-                        <div className="tripRoute_no"></div>
+                        <div className={"tripRoute_no color"+colorIndex}></div>
                         <div className="item_box">
                           <div className="item_box_content" onClick={()=>{openTodoModalFunc(place, index)}}>{place.tripTodo}</div>
-                          <button type="button" className="btn_delete"><span className="hidden">삭제</span></button>
+                          <button type="button" className="btn_delete" onClick={()=>{deleteTodoFunc(index)}}><span className="hidden">삭제</span></button>
                         </div>
                       </div>
                     ) : ""}
