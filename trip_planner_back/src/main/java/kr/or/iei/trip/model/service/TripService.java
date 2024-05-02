@@ -73,50 +73,83 @@ public class TripService {
 		return map;
 	}
 
-//	@Transactional
-//	public int insertTrip(Trip trip, String memberEmail) {
-//		Member m = memberDao.selectOneMember(memberEmail);
-//		trip.setMemberNo(m.getMemberNo()); 
-//		int result = tripDao.insertTrip(trip);
-//		for(TripDetail td : trip.getTripDetailList()) {
-//			td.setTripNo(trip.getTripNo());
-//			result += tripDao.insertTripDetail(td);
-//			if(td.getSelectPlaceList() != null) {
-//				for(TripPlace tp : td.getSelectPlaceList()) {
-//					tp.setTripDetailNo(td.getTripDetailNo());
-//					result += tripDao.insertTripPlace(tp);
-//				}				
-//			}
-//		}
-//		return result;
-//	}
-//
-//	public List<Trip> selectMyComingTripList(int reqPage, String memberEmail) {
-//		int amount = 5;
-//		int end = reqPage * amount;
-//		int start = end - amount + 1;
-//		List<Trip> tripList = tripDao.selectMyComingTripList(memberEmail, start, end);
-//		return tripList;
-//	}
-//	
-//	public List<Trip> selectMyPastTripList(int reqPage, String memberEmail) {
-//		int amount = 5;
-//		int end = reqPage * amount;
-//		int start = end - amount + 1;
-//		List<Trip> tripList = tripDao.selectMyPastTripList(memberEmail, start, end);
-//		return tripList;
-//	}
-//
-//	public Trip selectOneTrip(int tripNo) {
-//		return tripDao.selectOneTrip(tripNo);
-//	}
-//
-//	@Transactional
-//	public int updateTrip(Trip trip) {
-//		System.out.println("날짜 수정의 trip: "+trip);
-//		return tripDao.updateTrip(trip);
-//	}
-//
+	@Transactional
+	public int insertTrip(Trip trip, String memberEmail) {
+		Member m = memberDao.selectOneMember(memberEmail);
+		trip.setMemberNo(m.getMemberNo()); 
+		int result = tripDao.insertTrip(trip);
+		for(TripDetail td : trip.getTripDetailList()) {
+			td.setTripNo(trip.getTripNo());
+			result += tripDao.insertTripDetail(td);
+		}
+		if(result == trip.getTripDetailList().size() + 1) {
+			return 1;			
+		}else {
+			return 0;
+		}
+	}
+
+	public List<Trip> selectMyComingTripList(int reqPage, String memberEmail) {
+		int amount = 5;
+		int end = reqPage * amount;
+		int start = end - amount + 1;
+		List<Trip> tripList = tripDao.selectMyComingTripList(memberEmail, start, end);
+		return tripList;
+	}
+	
+	public List<Trip> selectMyPastTripList(int reqPage, String memberEmail) {
+		int amount = 5;
+		int end = reqPage * amount;
+		int start = end - amount + 1;
+		List<Trip> tripList = tripDao.selectMyPastTripList(memberEmail, start, end);
+		return tripList;
+	}
+
+	public Trip selectOneTrip(int tripNo) {
+		return tripDao.selectOneTrip(tripNo);
+	}
+
+	@Transactional
+	public int updateTrip(Trip trip) {
+		return tripDao.updateTrip(trip);
+	}
+
+	@Transactional
+	public int updateTripDetail(Trip trip) {
+		int insertTdLength = 0;
+		int insertTdResult = 0;
+		int updateTdLength = 0;
+		int updateTdResult = 0;
+		int deleteTdLength = 0;
+		int deleteTdResult = 0;
+		
+		for(TripDetail td : trip.getTripDetailList()) {
+			if(td.getTripDetailNo() == 0) {
+				System.out.println("새로 등록한 일정인 경우");
+				insertTdLength++;
+				insertTdResult += tripDao.insertTripDetail(td);
+			}else {
+				System.out.println("기존 일정인 경우");
+				if(td.getDelNo() == 1) {
+					System.out.println("삭제할 것: "+td);
+					deleteTdLength++;
+					deleteTdResult += tripDao.deleteTripDetail(td);
+					System.out.println("deleteTdResult: "+deleteTdResult);
+					System.out.println("deleteTdLength: "+deleteTdLength);
+				}else {
+					updateTdLength++;					
+					updateTdResult += tripDao.updateTripDetail(td);
+				}
+			}
+		}
+		
+		if(insertTdLength == insertTdResult && updateTdLength == updateTdResult && deleteTdLength == deleteTdResult) {
+			return 1;
+		}else {
+			return -1;
+		}
+	}
+	
 //	@Transactional
 //	public int updateTripDetail(Trip trip) {
 //		int insertTdLength = 0;

@@ -61,7 +61,7 @@ const CreateTrips = (props)=>{
   const [tripTodo, setTripTodo] = useState("");
   const [selectPlaceIndex, setSelectPlaceIndex] = useState(-1);
   
-  console.log(dayjs(tripStartDate).format("YYYY-MM-DD"));
+  // console.log(dayjs(tripStartDate).format("YYYY-MM-DD"));
   /***** functions *****/
   //*** 여행 등록하기 ***//
   const createTripsFunc = ()=>{
@@ -73,17 +73,17 @@ const CreateTrips = (props)=>{
 
     console.log(trip);
     console.log(tripDetailList);
-    // axios.post(backServer + "/trip", trip)
-    // .then((res) => {
-    //   if(res.data.message === "success"){
-    //     Swal.fire({icon: "success", title: "등록 완료", text: "여행 일정이 등록되었습니다.", confirmButtonText: "닫기"});
-    //     // navigate("/mypage/myTrips");
-    //   }
-    // })
-    // .catch((res) => {
-    //   console.log(res);
-    //   Swal.fire({icon: "warning", text: "문제가 발생했습니다. 잠시 후 다시 시도해주세요.", confirmButtonText: "닫기"})
-    // })
+    axios.post(backServer + "/trip", trip)
+    .then((res) => {
+      if(res.data.message === "success"){
+        Swal.fire({icon: "success", title: "등록 완료", text: "여행 일정이 등록되었습니다.", confirmButtonText: "닫기"});
+        navigate("/mypage/myTrips");
+      }
+    })
+    .catch((res) => {
+      console.log(res);
+      Swal.fire({icon: "warning", text: "문제가 발생했습니다. 잠시 후 다시 시도해주세요.", confirmButtonText: "닫기"})
+    })
   }
 
   //장소 검색창 닫았을 때
@@ -101,6 +101,8 @@ const CreateTrips = (props)=>{
   }
   //장소 검색(여행지)
   useEffect(()=>{
+    setActivePlaceIndex(-1);
+    removeInfoWindow(infoWindows, setInfoWindows);
     const searchObj = {keyword: keyword, reqPage: placeReqPage};
     if(keyword !== ""){
       axios.post(backServer + "/trip/searchPlace", searchObj)
@@ -116,6 +118,8 @@ const CreateTrips = (props)=>{
   }, [keyword, placeReqPage])
   //장소 검색(숙소)
   useEffect(()=>{
+    setActiveInnIndex(-1);
+    removeInfoWindow(innInfoWindows, setInnInfoWindows);
     const searchObj = {keyword: keyword, reqPage: innReqPage};
     if(keyword !== ""){
       axios.post(backServer + "/trip/searchInns", searchObj)
@@ -560,11 +564,13 @@ const CreateTrips = (props)=>{
               {
                 tripDays.map((day, index)=>{
                   let totalCost = 0;
-                  for(let i=0; i<selectPlaceList[index].length; i++){
-                    if(!selectPlaceList[index][i].tripCost){
-                      selectPlaceList[index][i].tripCost = 0;
+                  if(selectPlaceList[index]){
+                    for(let i=0; i<selectPlaceList[index].length; i++){
+                      if(!selectPlaceList[index][i].tripCost){
+                        selectPlaceList[index][i].tripCost = 0;
+                      }
+                      totalCost += Number(selectPlaceList[index][i].tripCost);
                     }
-                    totalCost += Number(selectPlaceList[index][i].tripCost);
                   }
                   return(
                     <SetDayWrap key={"day"+index} tripDays={tripDays} tripDate={day} dayIndex={index} setOpenSearchWrap={setOpenSearchWrap} selectPlaceList={selectPlaceList} setSelectPlaceList={setSelectPlaceList} selectPlaceListIndex={selectPlaceListIndex} setSelectPlaceListIndex={setSelectPlaceListIndex} setOpenCostModal={setOpenCostModal} setOpenTodoModal={setOpenTodoModal} setModalTitle={setModalTitle} setSelectPlaceIndex={setSelectPlaceIndex} setTripCost={setTripCost} setTripTodo={setTripTodo} totalCost={totalCost} activeMyPlaceIndex={activeMyPlaceIndex} setActiveMyPlaceIndex={setActiveMyPlaceIndex} setActivePlaceIndex={setActivePlaceIndex} setActiveInnIndex={setActiveInnIndex} showInfoWindow={showInfoWindow} myInfoWindows={myInfoWindows} myPlaceRef={myPlaceRef} activeMyPlaceRef={activeMyPlaceRef} />
@@ -680,7 +686,7 @@ const CreateTrips = (props)=>{
         </div>
       </Modal>
 
-      <Modal class="modal lg" open={openTodoModal} closeModal={closeTodoModalFunc} title={modalTitle}>
+      <Modal class="modal lg" open={openTodoModal} closeModal={closeTodoModalFunc} title={modalTitle} useCloseBtn={true}>
         <Textarea data={tripTodo} setData={setTripTodo} placeholder="할 일을 입력해주세요" />
 
         <div className="btn_area">
@@ -846,8 +852,16 @@ const SetDayWrap = (props)=>{
                           }
                         </div>
                         <div className="item_btn_wrap">
-                          <button type="button" className="btn_changeOrder down" onClick={()=>{tripRouteDownFunc(index)}}><span className="hidden">내리기</span></button>
-                          <button type="button" className="btn_changeOrder up" onClick={()=>{tripRouteUpFunc(index)}}><span className="hidden">올리기</span></button>
+                          {
+                            dayIndex === selectPlaceList.length-1 && index === selectPlaceList[dayIndex].length-1 ? "" : (
+                              <button type="button" className="btn_changeOrder down" onClick={()=>{tripRouteDownFunc(index)}}><span className="hidden">내리기</span></button>
+                            )
+                          }
+                          {
+                            dayIndex === 0 && index === 0 ? "" : (
+                              <button type="button" className="btn_changeOrder up" onClick={()=>{tripRouteUpFunc(index)}}><span className="hidden">올리기</span></button>
+                            )
+                          }
                         </div>
                         {
                           place.tripCost && place.tripTodo ? "" : (

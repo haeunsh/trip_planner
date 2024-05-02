@@ -220,7 +220,7 @@ const TripListItem = (props) => {
           <div className="trip_title">{item.tripTitle}</div>
           <div className="trip_date">{item.tripStartDate.replaceAll("-",".")} - {item.tripEndDate.replaceAll("-",".")}</div>
           <div className="btm_info">
-            <span className="trip_place_count">{item.tripPlaceCount !== 0 ? item.tripPlaceName + "외" + (item.tripPlaceCount-1) + "개 장소" : "0개 장소"}</span>
+            <span className="trip_place_count">{item.placeCount !== 0 ? item.placeName + " 외 " + (item.placeCount-1) + "개 장소" : "0개 장소"}</span>
             {/* <span className="book_inn">예약한 숙소: 1</span> */}
             {/* <span className="book_tour">예약한 투어: 1</span> */}
           </div>

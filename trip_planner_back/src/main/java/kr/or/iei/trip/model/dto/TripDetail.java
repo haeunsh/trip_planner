@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.type.Alias;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import kr.or.iei.inn.model.dto.Inn;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,9 +20,13 @@ public class TripDetail {
 	private int tripNo;
 	private int innNo;
 	private int placeNo;
+	private int delNo;
 	private String tripDay;
+	private String oldTripDay;
 	private int tripRoute;
+	private int oldTripRoute;
 	private int tripCost;
 	private String tripTodo;
-	private List<TripPlace> placeList;
+	private TripPlace selectPlace;
+	private Inn selectInn;
 }

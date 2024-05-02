@@ -21,7 +21,6 @@
 		select * from (select rownum rnum, i.* from (select inn_no, case when inn_type = 1 then '호텔' when inn_type = 2 then '리조트' when inn_type = 3 then '펜션' when inn_type = 4 then '게스트하우스' end inn_type_str, (select partner_name from partner_tbl where partner_no=inn.partner_no) partner_name, (select partner_tel from partner_tbl where partner_no=inn.partner_no) partner_tel, inn_addr from inn_tbl inn order by partner_name)i where partner_name||inn_addr like '%'||#{keyword}||'%') where rnum between #{start} and #{end}
 	</select>
 
-	<!--
 	<insert id="insertTrip">
 		insert into trip_tbl values(trip_seq.nextval, #{memberNo}, #{tripTitle}, #{tripStartDate}, #{tripEndDate})
 		<selectKey resultType="int" keyProperty="tripNo" order="AFTER">
@@ -30,34 +29,50 @@
 	</insert>
 
 	<insert id="insertTripDetail">
-		insert into trip_detail_tbl values(trip_detail_seq.nextval, #{tripNo}, #{tripDay}, #{tripCost})
-		<selectKey resultType="int" keyProperty="tripDetailNo" order="AFTER">
-			select max(trip_detail_no) from trip_detail_tbl
-		</selectKey>
-	</insert>
-
-	<insert id="insertTripPlace">
-		insert into trip_place_tbl values(#{tripDetailNo}, #{tripRoute},
-		#{tripPlaceName}, #{tripPlaceCategory}, #{tripPlaceAddress},
-		#{tripPlacePhone}, #{tripPlaceLat}, #{tripPlaceLng}, #{tripTodo})
+		insert into trip_detail_tbl values(
+			trip_detail_seq.nextval,
+			#{tripNo},
+			<choose>
+				<when test="innNo != 0">
+					#{innNo},
+				</when>
+				<when test="innNo == 0">
+					null,
+				</when>
+			</choose>
+			<choose>
+				<when test="placeNo != 0">
+					#{placeNo},
+				</when>
+				<when test="placeNo == 0">
+					null,
+				</when>
+			</choose>
+			#{tripDay},
+			#{tripRoute},
+			#{tripCost},
+			#{tripTodo}
+		)
 	</insert>
 
 	<select id="selectMyComingTripList" resultType="trip">
-		select * from (select rownum rnum, t.* from (select trip_no, member_no, trip_title, to_char(trip_start_date,'YYYY-MM-DD') trip_start_date, to_char(trip_end_date,'YYYY-MM-DD') trip_end_date,
-		(select trip_place_name from trip_place_tbl where trip_detail_no in (select trip_detail_no from trip_detail_tbl where trip_no=t.trip_no) and rownum = 1) trip_place_name,
-		(select count(*) from trip_place_tbl where trip_detail_no in (select trip_detail_no from trip_detail_tbl where trip_no=t.trip_no)) trip_place_count
-		from trip_tbl t where member_no in(select member_no from member_tbl where member_email=#{memberEmail})
-		and to_char(trip_end_date, 'yyyy-mm-dd') <![CDATA[ >= ]]> to_char(sysdate, 'yyyy-mm-dd')
-		order by trip_start_date desc)t) where rnum between #{start} and #{end}
+		select * from 
+		(select rownum rnum, tt.* from
+		    (select trip_no, member_no, trip_title, to_char(trip_start_date,'YYYY-MM-DD') trip_start_date, to_char(trip_end_date,'YYYY-MM-DD') trip_end_date,
+		    (select place_name from trip_place_tbl where place_no in (select place_no from trip_detail_tbl where trip_no=t.trip_no and rownum=1)) place_name,
+		    (select count(*) from trip_place_tbl where place_no in (select place_no from trip_detail_tbl where trip_no=t.trip_no)) place_count
+		    from trip_tbl t where member_no in(select member_no from member_tbl where member_email=#{memberEmail}) and to_char(trip_end_date, 'yyyy-mm-dd') <![CDATA[ >= ]]> to_char(sysdate, 'yyyy-mm-dd') order by trip_start_date desc)tt)
+		where rnum between #{start} and #{end}
 	</select>
 	
 	<select id="selectMyPastTripList" resultType="trip">
-		select * from (select rownum rnum, t.* from (select trip_no, member_no, trip_title, to_char(trip_start_date,'YYYY-MM-DD') trip_start_date, to_char(trip_end_date,'YYYY-MM-DD') trip_end_date,
-		(select trip_place_name from trip_place_tbl where trip_detail_no in (select trip_detail_no from trip_detail_tbl where trip_no=t.trip_no) and rownum = 1) trip_place_name,
-		(select count(*) from trip_place_tbl where trip_detail_no in (select trip_detail_no from trip_detail_tbl where trip_no=t.trip_no)) trip_place_count
-		from trip_tbl t where member_no in(select member_no from member_tbl where member_email=#{memberEmail})
-		and to_char(trip_end_date, 'yyyy-mm-dd') <![CDATA[ < ]]> to_char(sysdate, 'yyyy-mm-dd')
-		order by trip_start_date desc)t) where rnum between #{start} and #{end}
+		select * from 
+		(select rownum rnum, tt.* from
+		    (select trip_no, member_no, trip_title, to_char(trip_start_date,'YYYY-MM-DD') trip_start_date, to_char(trip_end_date,'YYYY-MM-DD') trip_end_date,
+		    (select place_name from trip_place_tbl where place_no in (select place_no from trip_detail_tbl where trip_no=t.trip_no and rownum=1)) place_name,
+		    (select count(*) from trip_place_tbl where place_no in (select place_no from trip_detail_tbl where trip_no=t.trip_no)) place_count
+		    from trip_tbl t where member_no in(select member_no from member_tbl where member_email=#{memberEmail}) and to_char(trip_end_date, 'yyyy-mm-dd') <![CDATA[ < ]]> to_char(sysdate, 'yyyy-mm-dd') order by trip_start_date desc)tt)
+		where rnum between #{start} and #{end}
 	</select>
 
 	<select id="selectOneTrip" resultMap="getTrip">
@@ -67,13 +82,9 @@
 	</select>
 
 	<select id="selectOneTripDetailList" resultMap="getTripDetailList">
-		select trip_detail_no, trip_no, to_char(trip_day, 'YYYY-MM-DD') trip_day, trip_cost from trip_detail_tbl where trip_no=#{tripNo} order by trip_day
+		select trip_detail_no, trip_no, inn_no, place_no, to_char(trip_day, 'YYYY-MM-DD') trip_day, trip_route, trip_cost, trip_todo from trip_detail_tbl where trip_no=#{tripNo} order by trip_day, trip_route
 	</select>
-
-	<select id="selectOneTripPlaceList" resultType="tripPlace">
-		select * from trip_place_tbl where trip_detail_no=#{tripDetailNo} order by trip_route
-	</select>
-
+	
 	<resultMap type="trip" id="getTrip">
 		<result column="trip_no" property="tripNo" />
 		<result column="member_no" property="memberNo" />
@@ -85,18 +96,34 @@
 			javaType="java.util.List" ofType="tripDetail">
 		</collection>
 	</resultMap>
-
+	
 	<resultMap type="tripDetail" id="getTripDetailList">
 		<result column="trip_detail_no" property="tripDetailNo" />
 		<result column="trip_no" property="tripNo" />
+		<result column="inn_no" property="innNo" />
+		<result column="place_no" property="placeNo" />
 		<result column="trip_day" property="tripDay" />
+		<result column="trip_route" property="tripRoute" />
 		<result column="trip_cost" property="tripCost" />
-		<collection property="selectPlaceList"
-			select="selectOneTripPlaceList" column="trip_detail_no"
-			javaType="java.util.List" ofType="tripPlace">
+		<result column="trip_todo" property="tripTodo" />
+		<collection property="selectPlace"
+			select="selectOneTripPlace" column="place_no"
+			javaType="java.util.HashMap" ofType="tripPlace">
+		</collection>
+		<collection property="selectInn"
+			select="selectOneTripInn" column="inn_no"
+			javaType="java.util.HashMap" ofType="inn">
 		</collection>
 	</resultMap>
-
+	
+	<select id="selectOneTripPlace" resultType="tripPlace">
+		select place_no, place_name, place_category, place_address, place_phone, place_lat, place_lng from trip_place_tbl where place_no=#{placeNo}
+	</select>
+	
+	<select id="selectOneTripInn" resultType="inn">
+		select inn_no, case when inn_type = 1 then '호텔' when inn_type = 2 then '리조트' when inn_type = 3 then '펜션' when inn_type = 4 then '게스트하우스' end inn_type_str, (select partner_name from partner_tbl where partner_no=inn.partner_no) partner_name, (select partner_tel from partner_tbl where partner_no=inn.partner_no) partner_tel, inn_addr from inn_tbl inn where inn_no=#{innNo}
+	</select>
+	
 	<update id="updateTrip">
 		update trip_tbl
 		<trim prefix="set" prefixOverrides=",">
@@ -114,9 +141,19 @@
 	</update>
 
 	<update id="updateTripDetail">
-		update trip_detail_tbl set trip_day=#{tripDay}, trip_cost=#{tripCost} where trip_detail_no=#{tripDetailNo}
+		update trip_detail_tbl set trip_day=#{tripDay}, trip_route=#{tripRoute}, trip_cost=#{tripCost}, trip_todo=#{tripTodo}
+		where trip_detail_no=#{tripDetailNo}
+		<if test="oldTripDay != null">
+			and trip_day=#{oldTripDay}		
+		</if>
+		and trip_route=#{oldTripRoute}
 	</update>
+	
+	<delete id="deleteTripDetail">
+		delete from trip_detail_tbl where trip_detail_no=#{tripDetailNo} and trip_day=#{tripDay} and trip_route=#{tripRoute}
+	</delete>
 
+	<!-- 
 	<delete id="deleteTripPlace">
 		delete from trip_place_tbl where trip_detail_no=#{tripDetailNo} and trip_route=#{oldTripRoute}
 	</delete>
@@ -138,10 +175,6 @@
 		update trip_place_tbl set trip_detail_no=#{tripDetailNo}, trip_route=#{tripRoute}, trip_todo=#{tripTodo}
 		where trip_detail_no in (select trip_detail_no from trip_detail_tbl where trip_day=#{oldTripDay} and trip_no=#{tripNo}) and trip_route=#{oldTripRoute}
 	</update>
-	
-	<delete id="deleteTripDetail">
-		delete from trip_detail_tbl where trip_day=#{oldTripDay} and trip_detail_no=#{tripDetailNo}
-	</delete>
 	
 	<delete id="deleteTripDay">
 	<![CDATA[
