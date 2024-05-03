@@ -194,11 +194,11 @@
 	<update id="updateTripRoute">
 		update trip_place_tbl set trip_route=#{tripRoute} where trip_route=#{oldTripRoute} and trip_detail_no=#{tripDetailNo}
 	</update>
+	-->
 	
 	<delete id="deleteTrip">
 		delete from trip_tbl where trip_no=#{tripNo}
 	</delete>
-	 -->
 </mapper>
 
 

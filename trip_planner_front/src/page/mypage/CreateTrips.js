@@ -324,16 +324,7 @@ const CreateTrips = (props)=>{
     //숙소 검색 시 좌표 값을 받아오기 위한 Geocoder
     const geocoder = new kakao.maps.services.Geocoder();
 
-    //초기화
-    // removeMarker(markers, setMarkers);
-    // removeMarker(innMarkers, setInnMarkers);
-    // removeMarker(myMarkers, setMyMarkers);
-    // removeInfoWindow(infoWindows, setInfoWindows);
-    // removeInfoWindow(innInfoWindows, setInnInfoWindows);
-    // removeInfoWindow(myInfoWindows, setMyInfoWindows);
-    // setActivePlaceIndex(-1);
-    // setActiveInnIndex(-1);
-    // setActiveMyPlaceIndex([]);
+    //맵루트 초기화
     removeMapRoute();
     removeLinePath();
     removePolyline();
@@ -361,7 +352,7 @@ const CreateTrips = (props)=>{
       })
       setInnInfos(innArr);
     }else{
-      //초기화
+      //마커,인포윈도우 초기화
       removeMarker(markers, setMarkers);
       removeMarker(innMarkers, setInnMarkers);
       removeMarker(myMarkers, setMyMarkers);
@@ -739,7 +730,8 @@ const SetDayWrap = (props)=>{
   //비용 추가 버튼 클릭시
   const openCostModalFunc = (place, index)=>{
     setOpenCostModal(true);
-    setModalTitle(place.placeName);
+    const placeName = place.placeName ? place.placeName : place.partnerName;
+    setModalTitle(placeName);
     setSelectPlaceListIndex(dayIndex);
     setSelectPlaceIndex(index);
     setTripCost(place.tripCost);
@@ -747,7 +739,8 @@ const SetDayWrap = (props)=>{
   //할 일 추가 버튼 클릭시
   const openTodoModalFunc = (place, index)=>{
     setOpenTodoModal(true);
-    setModalTitle(place.placeName);
+    const placeName = place.placeName ? place.placeName : place.partnerName;
+    setModalTitle(placeName);
     setSelectPlaceListIndex(dayIndex);
     setSelectPlaceIndex(index);
     setTripTodo(place.tripTodo);

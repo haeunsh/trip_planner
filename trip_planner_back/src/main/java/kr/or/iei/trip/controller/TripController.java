@@ -284,25 +284,24 @@ public class TripController {
 			ResponseDTO response = new ResponseDTO(200, HttpStatus.OK, "fail", null);
 			return new ResponseEntity<ResponseDTO>(response, response.getHttpStatus());
 		}
-//		return null;
 	}
 	
-//	@Operation(summary = "여행 일정 삭제", description = "여행 일정 삭제")
-//	@ApiResponses({
-//		@ApiResponse(responseCode = "200", description = "message 값 확인"),
-//		@ApiResponse(responseCode = "500", description = "서버 에러")
-//	})
-//	@DeleteMapping(value="{tripNo}")
-//	public ResponseEntity<ResponseDTO> deleteTrip(@PathVariable int tripNo){
-//		int result = tripService.deleteTrip(tripNo);
-//		if(result > 0) {
-//			ResponseDTO response = new ResponseDTO(200, HttpStatus.OK, "success", null);
-//			return new ResponseEntity<ResponseDTO>(response, response.getHttpStatus());
-//		}else {
-//			ResponseDTO response = new ResponseDTO(200, HttpStatus.OK, "fail", null);
-//			return new ResponseEntity<ResponseDTO>(response, response.getHttpStatus());
-//		}
-//	}
+	@Operation(summary = "여행 일정 삭제", description = "여행 일정 삭제")
+	@ApiResponses({
+		@ApiResponse(responseCode = "200", description = "message 값 확인"),
+		@ApiResponse(responseCode = "500", description = "서버 에러")
+	})
+	@DeleteMapping(value="{tripNo}")
+	public ResponseEntity<ResponseDTO> deleteTrip(@PathVariable int tripNo){
+		int result = tripService.deleteTrip(tripNo);
+		if(result > 0) {
+			ResponseDTO response = new ResponseDTO(200, HttpStatus.OK, "success", null);
+			return new ResponseEntity<ResponseDTO>(response, response.getHttpStatus());
+		}else {
+			ResponseDTO response = new ResponseDTO(200, HttpStatus.OK, "fail", null);
+			return new ResponseEntity<ResponseDTO>(response, response.getHttpStatus());
+		}
+	}
 }
 
 

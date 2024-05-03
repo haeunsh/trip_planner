@@ -65,6 +65,9 @@ const ModifyTrips = (props)=>{
   const [tripCost, setTripCost] = useState(0);
   const [tripTodo, setTripTodo] = useState("");
   const [selectPlaceIndex, setSelectPlaceIndex] = useState(-1);
+
+  const [btnModifyText, setBtnModifyText] = useState("수정하기");
+  const [modifyMode, setModifyMode] = useState(false);
   
   //등록된 데이터 가져오기
   useEffect(() => {
@@ -79,25 +82,48 @@ const ModifyTrips = (props)=>{
         for(let i=0; i<res.data.data.tripDetailList.length; i++){
           if(i !== 0){
             if(res.data.data.tripDetailList[i].tripDay === res.data.data.tripDetailList[i-1].tripDay){
-              res.data.data.tripDetailList[i].selectPlace.tripDetailNo = res.data.data.tripDetailList[i].tripDetailNo;
-              res.data.data.tripDetailList[i].selectPlace.tripCost = res.data.data.tripDetailList[i].tripCost;
-              res.data.data.tripDetailList[i].selectPlace.tripTodo = res.data.data.tripDetailList[i].tripTodo;
-              placeListArr[placeListArr.length-1].push(res.data.data.tripDetailList[i].selectPlace);
+              if(res.data.data.tripDetailList[i].selectPlace){
+                res.data.data.tripDetailList[i].selectPlace.tripDetailNo = res.data.data.tripDetailList[i].tripDetailNo;
+                res.data.data.tripDetailList[i].selectPlace.tripCost = res.data.data.tripDetailList[i].tripCost;
+                res.data.data.tripDetailList[i].selectPlace.tripTodo = res.data.data.tripDetailList[i].tripTodo;
+                placeListArr[placeListArr.length-1].push(res.data.data.tripDetailList[i].selectPlace);
+              }else if(res.data.data.tripDetailList[i].selectInn){
+                res.data.data.tripDetailList[i].selectInn.tripDetailNo = res.data.data.tripDetailList[i].tripDetailNo;
+                res.data.data.tripDetailList[i].selectInn.tripCost = res.data.data.tripDetailList[i].tripCost;
+                res.data.data.tripDetailList[i].selectInn.tripTodo = res.data.data.tripDetailList[i].tripTodo;
+                placeListArr[placeListArr.length-1].push(res.data.data.tripDetailList[i].selectInn);
+              }
             }else{
               const innerArr = new Array();
+              if(res.data.data.tripDetailList[i].selectPlace){
+                res.data.data.tripDetailList[i].selectPlace.tripDetailNo = res.data.data.tripDetailList[i].tripDetailNo;
+                res.data.data.tripDetailList[i].selectPlace.tripCost = res.data.data.tripDetailList[i].tripCost;
+                res.data.data.tripDetailList[i].selectPlace.tripTodo = res.data.data.tripDetailList[i].tripTodo;
+                innerArr.push(res.data.data.tripDetailList[i].selectPlace);
+                placeListArr.push(innerArr);
+              }else if(res.data.data.tripDetailList[i].selectInn){
+                res.data.data.tripDetailList[i].selectInn.tripDetailNo = res.data.data.tripDetailList[i].tripDetailNo;
+                res.data.data.tripDetailList[i].selectInn.tripCost = res.data.data.tripDetailList[i].tripCost;
+                res.data.data.tripDetailList[i].selectInn.tripTodo = res.data.data.tripDetailList[i].tripTodo;
+                innerArr.push(res.data.data.tripDetailList[i].selectInn);
+                placeListArr.push(innerArr);
+              }
+            }
+          }else{
+            const innerArr = new Array();
+            if(res.data.data.tripDetailList[i].selectPlace){
               res.data.data.tripDetailList[i].selectPlace.tripDetailNo = res.data.data.tripDetailList[i].tripDetailNo;
               res.data.data.tripDetailList[i].selectPlace.tripCost = res.data.data.tripDetailList[i].tripCost;
               res.data.data.tripDetailList[i].selectPlace.tripTodo = res.data.data.tripDetailList[i].tripTodo;
               innerArr.push(res.data.data.tripDetailList[i].selectPlace);
               placeListArr.push(innerArr);
+            }else if(res.data.data.tripDetailList[i].selectInn){
+              res.data.data.tripDetailList[i].selectInn.tripDetailNo = res.data.data.tripDetailList[i].tripDetailNo;
+              res.data.data.tripDetailList[i].selectInn.tripCost = res.data.data.tripDetailList[i].tripCost;
+              res.data.data.tripDetailList[i].selectInn.tripTodo = res.data.data.tripDetailList[i].tripTodo;
+              innerArr.push(res.data.data.tripDetailList[i].selectInn);
+              placeListArr.push(innerArr);
             }
-          }else{
-            const innerArr = new Array();
-            res.data.data.tripDetailList[i].selectPlace.tripDetailNo = res.data.data.tripDetailList[i].tripDetailNo;
-            res.data.data.tripDetailList[i].selectPlace.tripCost = res.data.data.tripDetailList[i].tripCost;
-            res.data.data.tripDetailList[i].selectPlace.tripTodo = res.data.data.tripDetailList[i].tripTodo;
-            innerArr.push(res.data.data.tripDetailList[i].selectPlace);
-            placeListArr.push(innerArr);
           }
         }
         // console.log(placeListArr);
@@ -110,27 +136,14 @@ const ModifyTrips = (props)=>{
   }, [modifyTrip])
 
   /***** functions *****/
-  //*** 여행 수정하기 ***//
-  const createTripsFunc = ()=>{
-    const trip = {tripTitle: tripTitle, tripStartDate: dayjs(tripStartDate).format("YYYY-MM-DD"), tripEndDate: dayjs(tripEndDate).format("YYYY-MM-DD"), tripDetailListStr: JSON.stringify(tripDetailList)};
-
-    if(tripTitle === ""){
-      trip.tripTitle = "국내 여행";
+  //*** 여행 수정하기 버튼 클릭시 ***//
+  const modifyFunc = ()=>{
+    if(btnModifyText === "수정 완료"){
+      Swal.fire({icon: "success", title: "수정 완료", text: "여행 일정이 수정되었습니다.", confirmButtonText: "닫기"});
+      navigate("/mypage/myTrips");
+    }else{
+      setModifyMode(true);
     }
-
-    console.log(trip);
-    console.log(tripDetailList);
-    // axios.post(backServer + "/trip", trip)
-    // .then((res) => {
-    //   if(res.data.message === "success"){
-    //     Swal.fire({icon: "success", title: "등록 완료", text: "여행 일정이 등록되었습니다.", confirmButtonText: "닫기"});
-    //     navigate("/mypage/myTrips");
-    //   }
-    // })
-    // .catch((res) => {
-    //   console.log(res);
-    //   Swal.fire({icon: "warning", text: "문제가 발생했습니다. 잠시 후 다시 시도해주세요.", confirmButtonText: "닫기"})
-    // })
   }
   //여행 제목 수정
   const setTripTitleFunc = () => {
@@ -380,16 +393,7 @@ const ModifyTrips = (props)=>{
     //숙소 검색 시 좌표 값을 받아오기 위한 Geocoder
     const geocoder = new kakao.maps.services.Geocoder();
 
-    //초기화
-    // removeMarker(markers, setMarkers);
-    // removeMarker(innMarkers, setInnMarkers);
-    // removeMarker(myMarkers, setMyMarkers);
-    // removeInfoWindow(infoWindows, setInfoWindows);
-    // removeInfoWindow(innInfoWindows, setInnInfoWindows);
-    // removeInfoWindow(myInfoWindows, setMyInfoWindows);
-    // setActivePlaceIndex(-1);
-    // setActiveInnIndex(-1);
-    // setActiveMyPlaceIndex([]);
+    //맵루트 초기화
     removeMapRoute();
     removeLinePath();
     removePolyline();
@@ -417,7 +421,7 @@ const ModifyTrips = (props)=>{
       })
       setInnInfos(innArr);
     }else{
-      //초기화
+      //마커, 인포윈도우 초기화
       removeMarker(markers, setMarkers);
       removeMarker(innMarkers, setInnMarkers);
       removeMarker(myMarkers, setMyMarkers);
@@ -433,6 +437,15 @@ const ModifyTrips = (props)=>{
     selectPlaceList.forEach((list, index)=>{
       for(let i=0; i<list.length; i++){
         const place = list[i];
+        if(place.innAddr){
+          const callback = function(result, status) {
+            if(status === kakao.maps.services.Status.OK) {
+              place.placeLat = result[0].y;
+              place.placeLng = result[0].x;
+            }
+          };
+          geocoder.addressSearch(place.innAddr, callback);
+        }
         displayMarker("myMarker", myMarkers, setMyMarkers, myInfoWindows, setMyInfoWindows, setActiveMyPlaceIndex, place, [index, i]);
       }
     })
@@ -440,6 +453,15 @@ const ModifyTrips = (props)=>{
     selectPlaceList.forEach((list, index)=>{
       for(let i=0; i<list.length; i++){
         const place = list[i];
+        if(place.innAddr){
+          const callback = function(result, status) {
+            if(status === kakao.maps.services.Status.OK) {
+              place.placeLat = result[0].y;
+              place.placeLng = result[0].x;
+            }
+          };
+          geocoder.addressSearch(place.innAddr, callback);
+        }
         displayMapRoute(place, index);
       }
     })
@@ -666,17 +688,17 @@ const ModifyTrips = (props)=>{
           <div className="trips_wrap">
             <div className="trips_input_wrap">
               <div className="set_title_wrap">
-                <Input type="text" data={tripTitle || tripTitleInput} setData={setTripTitleInput} placeholder="여행 제목을 입력해주세요" blurEvent={setTripTitleFunc} />
+                <Input type="text" disabled={!modifyMode ? true : false} data={tripTitle || tripTitleInput} setData={setTripTitleInput} placeholder="여행 제목을 입력해주세요" blurEvent={setTripTitleFunc} />
               </div>
               <div className="set_date_wrap">
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DemoContainer components={['DatePicker', 'DatePicker']}>
                     <DatePicker onChange={(newValue)=>{
                       setTripStartDate(newValue);
-                    }} format="YYYY-MM-DD" disablePast value={tripStartDate || dayjs(new Date())} />
+                    }} format="YYYY-MM-DD" disablePast value={tripStartDate || dayjs(new Date())} disabled={!modifyMode ? true : false} />
                     <DatePicker onChange={(newValue)=>{
                       setTripEndDate(newValue);
-                    }} format="YYYY-MM-DD" disablePast value={tripEndDate || dayjs(new Date())} />
+                    }} format="YYYY-MM-DD" disablePast value={tripEndDate || dayjs(new Date())} disabled={!modifyMode ? true : false} />
                   </DemoContainer>
                 </LocalizationProvider>
               </div>
@@ -700,7 +722,7 @@ const ModifyTrips = (props)=>{
               }
             </div>
             <div className="btn_area">
-              <Button text="여행 등록하기" class="btn_primary" clickEvent={createTripsFunc}/>
+              <Button text={btnModifyText} class="btn_primary" clickEvent={modifyFunc}/>
             </div>
           </div>
           {/* 검색창 영역 */}
