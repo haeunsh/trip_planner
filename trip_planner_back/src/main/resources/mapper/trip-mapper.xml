@@ -59,8 +59,9 @@
 		select * from 
 		(select rownum rnum, tt.* from
 		    (select trip_no, member_no, trip_title, to_char(trip_start_date,'YYYY-MM-DD') trip_start_date, to_char(trip_end_date,'YYYY-MM-DD') trip_end_date,
-		    (select place_name from trip_place_tbl where place_no in (select place_no from trip_detail_tbl where trip_no=t.trip_no and rownum=1)) place_name,
-		    (select count(*) from trip_place_tbl where place_no in (select place_no from trip_detail_tbl where trip_no=t.trip_no)) place_count
+		    nvl((select place_name from trip_place_tbl where place_no in (select place_no from trip_detail_tbl where trip_no=t.trip_no and rownum=1)),
+    		(select partner_name from partner_tbl where partner_no in (select partner_no from inn_tbl where inn_no in (select inn_no from trip_detail_tbl where trip_no=t.trip_no and rownum=1)))) place_name,
+		    (select count(*) from trip_detail_tbl where trip_no=t.trip_no) place_count
 		    from trip_tbl t where member_no in(select member_no from member_tbl where member_email=#{memberEmail}) and to_char(trip_end_date, 'yyyy-mm-dd') <![CDATA[ >= ]]> to_char(sysdate, 'yyyy-mm-dd') order by trip_start_date desc)tt)
 		where rnum between #{start} and #{end}
 	</select>
@@ -69,8 +70,9 @@
 		select * from 
 		(select rownum rnum, tt.* from
 		    (select trip_no, member_no, trip_title, to_char(trip_start_date,'YYYY-MM-DD') trip_start_date, to_char(trip_end_date,'YYYY-MM-DD') trip_end_date,
-		    (select place_name from trip_place_tbl where place_no in (select place_no from trip_detail_tbl where trip_no=t.trip_no and rownum=1)) place_name,
-		    (select count(*) from trip_place_tbl where place_no in (select place_no from trip_detail_tbl where trip_no=t.trip_no)) place_count
+		    nvl((select place_name from trip_place_tbl where place_no in (select place_no from trip_detail_tbl where trip_no=t.trip_no and rownum=1)),
+    		(select partner_name from partner_tbl where partner_no in (select partner_no from inn_tbl where inn_no in (select inn_no from trip_detail_tbl where trip_no=t.trip_no and rownum=1)))) place_name,
+		    (select count(*) from trip_detail_tbl where trip_no=t.trip_no) place_count
 		    from trip_tbl t where member_no in(select member_no from member_tbl where member_email=#{memberEmail}) and to_char(trip_end_date, 'yyyy-mm-dd') <![CDATA[ < ]]> to_char(sysdate, 'yyyy-mm-dd') order by trip_start_date desc)tt)
 		where rnum between #{start} and #{end}
 	</select>
@@ -150,7 +152,7 @@
 	</update>
 	
 	<delete id="deleteTripDetail">
-		delete from trip_detail_tbl where trip_detail_no=#{tripDetailNo} and trip_day=#{tripDay} and trip_route=#{tripRoute}
+		delete from trip_detail_tbl where trip_detail_no=#{tripDetailNo} and trip_day=#{tripDay} and trip_route=#{oldTripRoute}
 	</delete>
 
 	<!-- 

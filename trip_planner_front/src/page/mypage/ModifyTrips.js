@@ -142,7 +142,9 @@ const ModifyTrips = (props)=>{
       Swal.fire({icon: "success", title: "수정 완료", text: "여행 일정이 수정되었습니다.", confirmButtonText: "닫기"});
       navigate("/mypage/myTrips");
     }else{
+      //수정권한 체크하고 넣어주기
       setModifyMode(true);
+      setBtnModifyText("수정 완료");
     }
   }
   //여행 제목 수정
@@ -434,37 +436,45 @@ const ModifyTrips = (props)=>{
     }
 
     //내 장소 마커 표시
-    selectPlaceList.forEach((list, index)=>{
-      for(let i=0; i<list.length; i++){
-        const place = list[i];
-        if(place.innAddr){
-          const callback = function(result, status) {
-            if(status === kakao.maps.services.Status.OK) {
-              place.placeLat = result[0].y;
-              place.placeLng = result[0].x;
-            }
-          };
-          geocoder.addressSearch(place.innAddr, callback);
+    if(selectPlaceList.length !== 0){
+      selectPlaceList.forEach((list, index)=>{
+        for(let i=0; i<list.length; i++){
+          const place = list[i];
+          if(place.innAddr){
+            const callback = function(result, status) {
+              if(status === kakao.maps.services.Status.OK) {
+                place.placeLat = result[0].y;
+                place.placeLng = result[0].x;
+              }
+              displayMarker("myMarker", myMarkers, setMyMarkers, myInfoWindows, setMyInfoWindows, setActiveMyPlaceIndex, place, [index, i]);
+            };
+            geocoder.addressSearch(place.innAddr, callback);
+          }else{
+            displayMarker("myMarker", myMarkers, setMyMarkers, myInfoWindows, setMyInfoWindows, setActiveMyPlaceIndex, place, [index, i]);
+          }
         }
-        displayMarker("myMarker", myMarkers, setMyMarkers, myInfoWindows, setMyInfoWindows, setActiveMyPlaceIndex, place, [index, i]);
-      }
-    })
+      })
+    }
     //내 장소 맵루트 표시
-    selectPlaceList.forEach((list, index)=>{
-      for(let i=0; i<list.length; i++){
-        const place = list[i];
-        if(place.innAddr){
-          const callback = function(result, status) {
-            if(status === kakao.maps.services.Status.OK) {
-              place.placeLat = result[0].y;
-              place.placeLng = result[0].x;
-            }
-          };
-          geocoder.addressSearch(place.innAddr, callback);
+    if(selectPlaceList.length !== 0){
+      selectPlaceList.forEach((list, index)=>{
+        for(let i=0; i<list.length; i++){
+          const place = list[i];
+          if(place.innAddr){
+            const callback = function(result, status) {
+              if(status === kakao.maps.services.Status.OK) {
+                place.placeLat = result[0].y;
+                place.placeLng = result[0].x;
+              }
+              displayMapRoute(place, index);
+            };
+            geocoder.addressSearch(place.innAddr, callback);
+          }else{
+            displayMapRoute(place, index);
+          }
         }
-        displayMapRoute(place, index);
-      }
-    })
+      })
+    }
 
     //** 마커 표시 함수 **//
     function displayMarker(type, markers, setMarkers, infoWindows, setInfoWindows, setActiveIndex, place, index){
@@ -716,7 +726,7 @@ const ModifyTrips = (props)=>{
                     }
                   }
                   return(
-                    <SetDayWrap key={"day"+index} trip={trip} setTrip={setTrip} tripDays={tripDays} tripDate={day} dayIndex={index} setOpenSearchWrap={setOpenSearchWrap} selectPlaceList={selectPlaceList} setSelectPlaceList={setSelectPlaceList} selectPlaceListIndex={selectPlaceListIndex} setSelectPlaceListIndex={setSelectPlaceListIndex} setOpenCostModal={setOpenCostModal} setOpenTodoModal={setOpenTodoModal} setModalTitle={setModalTitle} setSelectPlaceIndex={setSelectPlaceIndex} setTripCost={setTripCost} setTripTodo={setTripTodo} totalCost={totalCost} activeMyPlaceIndex={activeMyPlaceIndex} setActiveMyPlaceIndex={setActiveMyPlaceIndex} setActivePlaceIndex={setActivePlaceIndex} setActiveInnIndex={setActiveInnIndex} showInfoWindow={showInfoWindow} myInfoWindows={myInfoWindows} myPlaceRef={myPlaceRef} activeMyPlaceRef={activeMyPlaceRef} />
+                    <SetDayWrap key={"day"+index} modifyMode={modifyMode} trip={trip} setTrip={setTrip} tripDays={tripDays} tripDate={day} dayIndex={index} setOpenSearchWrap={setOpenSearchWrap} selectPlaceList={selectPlaceList} setSelectPlaceList={setSelectPlaceList} selectPlaceListIndex={selectPlaceListIndex} setSelectPlaceListIndex={setSelectPlaceListIndex} setOpenCostModal={setOpenCostModal} setOpenTodoModal={setOpenTodoModal} setModalTitle={setModalTitle} setSelectPlaceIndex={setSelectPlaceIndex} setTripCost={setTripCost} setTripTodo={setTripTodo} totalCost={totalCost} activeMyPlaceIndex={activeMyPlaceIndex} setActiveMyPlaceIndex={setActiveMyPlaceIndex} setActivePlaceIndex={setActivePlaceIndex} setActiveInnIndex={setActiveInnIndex} showInfoWindow={showInfoWindow} myInfoWindows={myInfoWindows} myPlaceRef={myPlaceRef} activeMyPlaceRef={activeMyPlaceRef} />
                   )
                 })
               }
@@ -842,6 +852,7 @@ const ModifyTrips = (props)=>{
 }
 
 const SetDayWrap = (props)=>{
+  const modifyMode = props.modifyMode;
   const trip = props.trip;
   const setTrip = props.setTrip;
   const tripDays = props.tripDays;
@@ -927,7 +938,7 @@ const SetDayWrap = (props)=>{
   }
   //장소 순서 변경 버튼 클릭시(올리기 버튼)
   const tripRouteUpFunc = (index)=>{
-//dayIndex가 첫 번째가 아니고 index는 첫 번째인 경우(이전 날로 넘겨야할 때)
+    //dayIndex가 첫 번째가 아니고 index는 첫 번째인 경우(이전 날로 넘겨야할 때)
     if(dayIndex !== 0 && index === 0){
       const thisItem = selectPlaceList[dayIndex].splice(index, 1);
       thisItem[0].oldTripDay = thisItem[0].tripDay;
@@ -1011,36 +1022,37 @@ const SetDayWrap = (props)=>{
                         <div className="item_btn_wrap">
                           {
                             dayIndex === selectPlaceList.length-1 && index === selectPlaceList[dayIndex].length-1 ? "" : (
-                              <button type="button" className="btn_changeOrder down" onClick={()=>{tripRouteDownFunc(index)}}><span className="hidden">내리기</span></button>
+                              <button type="button" disabled={!modifyMode ? true : false} className="btn_changeOrder down" onClick={()=>{tripRouteDownFunc(index)}}><span className="hidden">내리기</span></button>
                             )
                           }
                           {
                             dayIndex === 0 && index === 0 ? "" : (
-                              <button type="button" className="btn_changeOrder up" onClick={()=>{tripRouteUpFunc(index)}}><span className="hidden">올리기</span></button>
+                              <button type="button" disabled={!modifyMode ? true : false} className="btn_changeOrder up" onClick={()=>{tripRouteUpFunc(index)}}><span className="hidden">올리기</span></button>
                             )
                           }
                         </div>
+                        
                         {
                           place.tripCost && place.tripTodo ? "" : (
                             <div className="btn_area">
                               {!place.tripCost ? (
-                                <button type="button" className="btn_tripCost" onClick={()=>{openCostModalFunc(place, index)}}><i></i><span>비용 추가</span></button>
+                                <button type="button" disabled={!modifyMode ? true : false} className="btn_tripCost" onClick={()=>{openCostModalFunc(place, index)}}><i></i><span>비용 추가</span></button>
                               ) : ""}
                               {!place.tripTodo ? (
-                                <button type="button" className="btn_tripTodo" onClick={()=>{openTodoModalFunc(place, index)}}><i></i><span>할 일 추가</span></button>
+                                <button type="button" disabled={!modifyMode ? true : false} className="btn_tripTodo" onClick={()=>{openTodoModalFunc(place, index)}}><i></i><span>할 일 추가</span></button>
                               ) : ""}
                             </div>
                           )
                         }
-                        <button type="button" className="btn_delete" onClick={()=>{deletePlaceFunc(index)}}><span className="hidden">삭제</span></button>
+                        <button type="button" disabled={!modifyMode ? true : false} className="btn_delete" onClick={()=>{deletePlaceFunc(index)}}><span className="hidden">삭제</span></button>
                       </div>
                     </div>
                     {place.tripTodo ? (
                       <div className="tripTodo">
                         <div className={"tripRoute_no color"+colorIndex}></div>
                         <div className="item_box">
-                          <div className="item_box_content" onClick={()=>{openTodoModalFunc(place, index)}}>{place.tripTodo}</div>
-                          <button type="button" className="btn_delete" onClick={()=>{deleteTodoFunc(index)}}><span className="hidden">삭제</span></button>
+                          <div className="item_box_content" onClick={()=>{if(modifyMode){openTodoModalFunc(place, index)}}}>{place.tripTodo}</div>
+                          <button type="button" disabled={!modifyMode ? true : false} className="btn_delete" onClick={()=>{deletePlaceFunc(index)}}><span className="hidden">삭제</span></button>
                         </div>
                       </div>
                     ) : ""}
@@ -1053,7 +1065,7 @@ const SetDayWrap = (props)=>{
       </div>
       <div className="day_btns_wrap">
         <div className="btn_area">
-          <Button text="장소 추가" class={dayIndex === selectPlaceListIndex ? "btn_secondary md btn_openSearch active" : "btn_secondary md btn_openSearch"} clickEvent={openSearchWrapFunc} />
+          <Button text="장소 추가" disabled={!modifyMode ? true : false} class={dayIndex === selectPlaceListIndex ? "btn_secondary md btn_openSearch active" : "btn_secondary md btn_openSearch"} clickEvent={openSearchWrapFunc} />
         </div>
       </div>
     </div>
