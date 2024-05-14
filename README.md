@@ -7,22 +7,22 @@
 2024.03.19 ~ 2024.04.16(4주)
 
 ## 팀원 소개
-![팀소개이미지]()
+![팀소개이미지](https://github.com/haeunsh/trip_planner/blob/main/%ED%8C%80%EC%86%8C%EA%B0%9C%EB%B0%8F%EC%97%AD%ED%95%A0%EB%B6%84%EB%8B%B4.png)
 
 ## ERD
-![ERD이미지]()
+![ERD이미지](https://github.com/haeunsh/trip_planner/blob/main/trip_planner_erd.png)
 
 ## 개발 환경 및 기술 스택
 ### 백엔드
 - **언어**: Java 21
 - **프레임워크**: Spring Boot, Mybatis
 - **데이터베이스**: Oracle 11g
-- **통합 개발 환경(IDE)**: STS (Spring Tool Suite)
+- **통합 개발 환경(IDE)**: STS
 
 ### 프론트엔드
 - **언어 및 마크업**: HTML, CSS, JavaScript
 - **라이브러리**: React, Axios
-- **통합 개발 환경(IDE)**: VSCode (Visual Studio Code)
+- **통합 개발 환경(IDE)**: VSCode
 
 ### 협업 도구
 - **버전 관리**: GitHub
