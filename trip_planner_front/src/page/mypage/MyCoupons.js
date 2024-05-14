@@ -94,7 +94,7 @@ const MyCouponsListItem = (props) => {
 
   return(
     <li>
-      <div className={item.couponStatusStr === "사용완료" ? "couponItem completed" : item.couponStatusStr === "사용불가" ? "couponItem disabled" : "couponItem"}>
+      <div className={item.couponStatusStr === "사용완료" ? "couponItem completed" : item.couponStatusStr === "사용불가" || new Date(item.expiredDate).toLocaleDateString("ko-KR") < new Date().toLocaleDateString("ko-KR") ? "couponItem disabled" : "couponItem"}>
         <div className="coupon_info">
           <div className="inner">
             <div className="item_top_wrap">
@@ -132,7 +132,13 @@ const MyCouponsListItem = (props) => {
             item.couponStatusStr === "사용가능" ? (
               <div className="coupon_status">
                 <div className="inner">
-                  <span className="status">{item.couponStatusStr}</span>
+                  <span className="status">
+                  {
+                    new Date(item.expiredDate).toLocaleDateString("ko-KR") < new Date().toLocaleDateString("ko-KR") ? (
+                      <span className="status">기간 만료</span>
+                    ) : "사용가능"
+                  }
+                  </span>
                 </div>
               </div>
             ) : item.couponStatusStr === "사용불가" ? (
