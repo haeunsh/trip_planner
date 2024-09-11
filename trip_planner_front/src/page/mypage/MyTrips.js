@@ -255,9 +255,9 @@ const TripListItem = (props)=>{
         </div>
       </Link>
       <div className="btn_wrap">
-        {/* <button type="button" className="btn_delete" onClick={deleteTripFunc}><span className="hidden">삭제</span></button> */}
+        <button type="button" className="btn_delete" onClick={deleteTripFunc}><span className="hidden">삭제</span></button>
         {/* <button type="button" className="btn_share"><span className="hidden">공유하기</span></button> */}
-        <div className="small_menu_wrap">
+        {/* <div className="small_menu_wrap">
           <button className="btn_menu" onClick={menuOpenFunc}><span className="hidden">메뉴</span></button>
           {
             openMenu ? (
@@ -267,7 +267,7 @@ const TripListItem = (props)=>{
               </ul>
             ) : ""
           }
-        </div>
+        </div> */}
       </div>
     </li>
   )

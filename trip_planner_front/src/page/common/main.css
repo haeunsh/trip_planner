@@ -67,7 +67,7 @@
 .swiper.promotion_slide .swiper-pagination-bullet-active{background-color: #fff}
 .swiper.promotion_slide .swiper-pagination{bottom: 12px;}
 
-.contents.main_blogs{padding: 60px 0 76px;}
+.contents.main_blogs{padding: 60px 0 76px; padding-top: 120px;}
 .contents.main_blogs .slide_area{position: relative;}
 .swiper.blogs_slide {position: initial;}
 .blogs_slide .swiper-slide{border-radius: 12px; overflow: hidden;}

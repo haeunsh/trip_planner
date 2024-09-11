@@ -894,6 +894,9 @@ const SetDayWrap = (props)=>{
   }
   //비용 추가 버튼 클릭시
   const openCostModalFunc = (place, index)=>{
+    if(!modifyMode){
+      return;
+    }
     setOpenCostModal(true);
     setModalTitle(place.placeName);
     setSelectPlaceListIndex(dayIndex);
@@ -1015,7 +1018,7 @@ const SetDayWrap = (props)=>{
                           </div>
                           {
                             place.tripCost !== 0 ? (
-                              <div className="trip_cost" onClick={()=>{openCostModalFunc(place, index)}}>{place.tripCost}</div>
+                              <div className={!modifyMode ? "trip_cost disabled" : "trip_cost"} onClick={()=>{openCostModalFunc(place, index)}}>{place.tripCost}</div>
                             ) : ""
                           }
                         </div>

@@ -185,14 +185,14 @@ const Main = () => {
         </div>
       </section>
 
-      <section className="contents main_promotion">
+      {/* <section className="contents main_promotion">
         <h3 className="hidden">프로모션</h3>
         <div className="slide_area">
           <Swiper
             className="promotion_slide"
             navigation={true}
             pagination={true}
-            // autoplay={{ delay: 5000, disableOnInteraction: false }}
+            autoplay={{ delay: 5000, disableOnInteraction: false }}
             modules={[Navigation, Pagination, Autoplay]}
             slidesPerView={1}
             loop={true}
@@ -204,7 +204,7 @@ const Main = () => {
                   <Link to={"/promotionView/"+promotion.promotionNO}>
                     <img src={backServer + "/promotion/promotionThumbnail/" + promotion.promotionImg} />
                     <div className="promotion_info">
-                      {/* <div className="promotionRegion">{promotion.promotionRegion}</div> */}
+                      <div className="promotionRegion">{promotion.promotionRegion}</div>
                       <div className="promotionIntro">{promotion.promotionIntro}</div>
                       <div className="promotionName">{promotion.promotionName}</div>
                     </div>
@@ -214,7 +214,7 @@ const Main = () => {
             })}
           </Swiper>
         </div>
-      </section>
+      </section> */}
 
       <section className="contents main_blogs">
         <h3>인기 블로그</h3>
